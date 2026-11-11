@@ -448,7 +448,7 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
   padding: clamp(28px, 4vw, 56px); border-radius: 28px; background: var(--bg); color: var(--ink);
 }
 .vista__word { grid-row: 1; font-family: var(--display); font-weight: 400; text-transform: uppercase; line-height: .86; font-size: clamp(72px, 12vw, 220px); letter-spacing: -.005em; white-space: nowrap; }
-.vista__cap { grid-row: 2; max-width: 32ch; font-size: clamp(16px, 1.3vw, 19px); font-weight: 500; }
+.vista__cap { grid-row: 2; max-width: 32ch; font-size: clamp(16px, 1.3vw, 19px); font-weight: 500; opacity: .86; }
 .vista__img { grid-column: 2; grid-row: 1 / span 2; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 18px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .7); }
 .vistas__ctrl { display: none; }
 
@@ -461,7 +461,7 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .vistas--on .vista:not([data-state="active"]) .vista__img { pointer-events: auto; cursor: pointer; }
 .vistas--on .vista__word { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-62%); z-index: 2; font-size: clamp(96px, 13.5vw, 250px); }
 .vistas--on .vista__cap { position: absolute; left: var(--gutter); top: calc(50% + clamp(56px, 6.2vw, 116px)); z-index: 2; opacity: 0; transform: translateY(10px); transition: opacity .4s var(--ease), transform .6s var(--ease); }
-.vistas--on .vista[data-state="active"] .vista__cap { opacity: 1; transform: none; transition-delay: .45s; }
+.vistas--on .vista[data-state="active"] .vista__cap { opacity: .88; transform: none; transition-delay: .45s; }
 .ch { display: inline-block; transition: transform .85s var(--ease), opacity .5s var(--ease), filter .5s var(--ease); transition-delay: calc(var(--d) * 32ms); will-change: transform; }
 .vista[data-state="future"] .ch { transform: translateY(.5em) rotate(9deg) skewX(-10deg); opacity: 0; filter: blur(6px); }
 .vista[data-state="past"] .ch { transform: translateY(-.5em) rotate(-9deg) skewX(10deg); opacity: 0; filter: blur(6px); }
