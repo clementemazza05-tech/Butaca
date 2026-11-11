@@ -378,7 +378,8 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .reel__bar { display: none; }
 
 /* With JS: the folding accordion */
-.reel--on .reel__track { display: flex; height: clamp(500px, 66vh, 660px); }
+/* Title + reel + controls fit one screen under the nav (e.g. 1920x850 browser window) */
+.reel--on .reel__track { display: flex; height: clamp(360px, calc(100vh - 380px), 660px); height: clamp(360px, calc(100svh - 380px), 660px); }
 .reel--on .reel__panel { flex: 0 0 92px; min-height: 0; cursor: pointer; transition: flex-grow .8s var(--ease), flex-basis .8s var(--ease); }
 .reel--on .reel__panel.is-active { flex: 1 1 0; cursor: default; }
 .reel--on .reel__panel.is-active .reel__img { transform: scale(1); filter: saturate(1) brightness(.92); }
@@ -510,6 +511,15 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
   .snippet code { white-space: normal; word-break: break-all; }
   .snippet__dot { margin-top: 6px; }
   .footer__copy { margin-left: 0; width: 100%; }
+}
+
+/* Short laptop screens: smaller section titles so the reel still fits under the nav */
+@media (min-width: 768px) and (max-height: 760px) {
+  .section__title { font-size: clamp(56px, 13vh, 140px); margin-bottom: 28px; }
+  .reel--on .reel__track { height: clamp(320px, calc(100vh - 300px), 660px); height: clamp(320px, calc(100svh - 300px), 660px); }
+  .reel__num { font-size: clamp(64px, 12vh, 120px); margin-bottom: 12px; }
+  .reel__body p { margin-top: 8px; }
+  .reel__link { margin-top: 10px; }
 }
 
 @media (max-width: 767px) {

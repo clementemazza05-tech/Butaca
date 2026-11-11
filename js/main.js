@@ -342,8 +342,12 @@
       const el = id === '#top' ? document.body : document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      if (lenis) lenis.scrollTo(id === '#top' ? 0 : el, { duration: 1.6 });
-      else el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      // Land section headings just under the fixed nav instead of at the section's padded top
+      const heading = id === '#top' ? null : el.querySelector('.section__title');
+      const target = heading || el;
+      const offset = heading ? -(document.querySelector('.nav').offsetHeight + 16) : 0;
+      if (lenis) lenis.scrollTo(id === '#top' ? 0 : target, { duration: 1.6, offset });
+      else window.scrollTo({ top: id === '#top' ? 0 : target.getBoundingClientRect().top + scrollY + offset, behavior: reduceMotion ? 'auto' : 'smooth' });
       history.replaceState(null, '', id);
       const focusTarget = id === '#demo' ? document.getElementById('f-cine') : null;
       if (focusTarget) setTimeout(() => focusTarget.focus({ preventScroll: true }), lenis ? 1700 : 600);
