@@ -182,6 +182,14 @@ html.film-on .stage__vignette {
 }
 html.film-on .stage__fade { display: block; position: absolute; inset: 0; z-index: 20; background: var(--bg); opacity: 0; pointer-events: none; }
 html.film-on .beat { position: absolute; inset: 0; pointer-events: none; }
+/* Preload: until the engine paints its first frame only the poster shows, so the stacked beats never flash.
+   Then the hero arrives once, with an exponential ease-out. */
+html.film-on:not(.film-ready) .beat,
+html.film-on:not(.film-ready) .seat-pin { visibility: hidden; }
+html.film-on:not(.film-ready) .beat--hero { opacity: 0; filter: blur(12px); transform: scale(1.04); }
+html.film-on.film-ready .beat--hero {
+  transition: opacity .9s cubic-bezier(.16, 1, .3, 1), filter .9s cubic-bezier(.16, 1, .3, 1), transform 1.2s cubic-bezier(.16, 1, .3, 1);
+}
 html.film-on .beat a, html.film-on .beat button, html.film-on .beat .seatcard, html.film-on .beat .sheet { pointer-events: auto; }
 html.film-on .rv, html.film-on [data-beat-el] { will-change: opacity, transform; }
 

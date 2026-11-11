@@ -24,7 +24,11 @@
     (function () {
       var d = document.documentElement;
       d.classList.add('js');
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('film-on');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        d.classList.add('film-on');
+        // Safety net: if the scripts never arrive, fall back to the static layout instead of a blank stage
+        setTimeout(function () { if (!d.classList.contains('film-boot')) d.classList.remove('film-on'); }, 8000);
+      }
     })();
   </script>
 

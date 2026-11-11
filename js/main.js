@@ -67,6 +67,7 @@
     initSmoothScroll(false);
     return;
   }
+  root.classList.add('film-boot'); // tells the head-script safety net the engine is starting
 
   /* ===== Film engine ===== */
   const film = document.querySelector('.film');
@@ -314,8 +315,11 @@
 
     let rz;
     addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { layout(); render(true); }, 80); });
-    if (document.fonts && document.fonts.load) document.fonts.load('100px Anton').then(measureTitle).catch(() => {});
-    else measureTitle();
+    // Reveal the stage once the title is measured in Anton (capped, so a slow font never holds the page)
+    const fontReady = document.fonts && document.fonts.load
+      ? Promise.race([document.fonts.load('100px Anton'), new Promise((r) => setTimeout(r, 1200))]).catch(() => {})
+      : Promise.resolve();
+    fontReady.then(() => { measureTitle(); requestAnimationFrame(() => root.classList.add('film-ready')); });
   }
 
   start();
