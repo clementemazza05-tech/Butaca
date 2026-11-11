@@ -61,6 +61,7 @@
   initForm();
   initReel();
   initFlow();
+  initPilot();
 
   if (!root.classList.contains('film-on') || reduceMotion) {
     initSmoothScroll(false);
@@ -477,6 +478,36 @@
       entries.forEach((e) => e.target.classList.toggle('is-open', e.intersectionRatio >= 0.6));
     }, { threshold: [0, 0.6, 1] });
     cards.forEach((c) => io.observe(c));
+  }
+
+  /* ---- Pilot metrics: staggered rows, drawn leaders and a count-up, once ---- */
+  function initPilot() {
+    const pilot = document.querySelector('[data-pilot]');
+    if (!pilot || reduceMotion || !('IntersectionObserver' in window)) return;
+    const rows = [...pilot.querySelectorAll('.pilot__list li')];
+    const nums = rows.map((li) => li.querySelector('.pilot__num'));
+    rows.forEach((li, i) => li.style.setProperty('--i', i));
+    const write = (el, v) => { const n = Math.round(v); el.textContent = n === 0 ? '0 %' : `${el.dataset.sign}${n} %`; };
+    nums.forEach((el) => write(el, 0));
+    pilot.classList.add('pilot--anim');
+    const easeOut = (t) => 1 - Math.pow(2, -10 * t); // exponential ease-out
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      pilot.classList.add('is-in');
+      nums.forEach((el, i) => {
+        const to = Number(el.dataset.to);
+        const delay = i * 140 + 250, dur = 1100;
+        const t0 = performance.now() + delay;
+        const tick = (now) => {
+          const t = Math.min(1, Math.max(0, (now - t0) / dur));
+          write(el, to * (t === 1 ? 1 : easeOut(t)));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.35 });
+    io.observe(pilot);
   }
 
   /* ---- Hablemos: one-line demo request (front-end only) ---- */

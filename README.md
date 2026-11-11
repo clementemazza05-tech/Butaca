@@ -83,10 +83,20 @@ Everything lives at the top of `js/main.js`.
 
 - Contact: `hola@butaca.example`, `+54 9 11 0000-0000`, legal links (`#`).
 - Snippet URL `https://butaca.example/visor.js` (decorative).
-- Metrics show `+XX %` and are labeled `[dato a validar]`. The stats in the sheet are marked "Valores de demo".
+- The pilot metrics (+3 % conversion, −18 % location complaints, +13 % premium) come from a simulation, not from customers, and the page labels them "Simulación". Replace them with pilot data when it exists. The stats in the sheet are marked "Valores de demo".
 - The demo form is front-end only. Hook `initForm()` in `js/main.js` to your CRM or form endpoint.
 - `og:image` is relative. Make it an absolute URL once there's a domain.
 
 ## Screenshots
 
 `docs/screens/`: 1440×900 (`d-*`) and 390×844 (`m-*`) at timeline seconds 0, 1.5, 3, 5, 7, 9, 10.4 (sheet holding) and 11.3 (faded to black), plus the post-film sections. `debug-*` show the measured screen rect.
+
+## Pilot metrics simulation
+
+`docs/simulacion/simulacion.py` is a Monte Carlo model (100,000 scenarios, seed 2026) behind the numbers in "Lo que esperamos medir en tu piloto". Every assumption is a range written at the top of the script: how many buyers open the 3D view, how much seat-map drop-off and how many location complaints come from not knowing the view, and how much seeing the difference lifts premium upgrades. It reports the median and the p10–p90 range; the last run is in `docs/simulacion/resultados.json`.
+
+```bash
+python3 docs/simulacion/simulacion.py
+```
+
+These are estimates, not results. Change the ranges when you have real numbers from a cinema, rerun, and update the three values and ranges in `index.html`.

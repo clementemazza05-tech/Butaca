@@ -1,0 +1,19 @@
+{
+  "escenarios": 100000,
+  "semilla": 2026,
+  "conversion_online_pct": {
+    "mediana": 3.3,
+    "p10": 1.9,
+    "p90": 5.8
+  },
+  "reclamos_ubicacion_pct": {
+    "mediana": -17.6,
+    "p10": -24.2,
+    "p90": -12.4
+  },
+  "venta_premium_pct": {
+    "mediana": 13.0,
+    "p10": 8.1,
+    "p90": 19.1
+  }
+}
