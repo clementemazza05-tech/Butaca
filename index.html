@@ -159,37 +159,59 @@
       <span id="contenido" class="anchor" tabindex="-1"></span>
       <div class="wrap">
         <h2 class="display section__title" id="h-porque">Por qué a tu cine</h2>
-        <div class="tickets">
-          <article class="ticket">
-            <div class="ticket__stub" aria-hidden="true">
-              <span class="ticket__num">01</span>
-              <span class="ticket__seat">Fila H<br>Asiento 14</span>
+        <div class="reel" data-reel>
+          <div class="reel__track">
+            <article class="reel__panel is-active">
+              <img class="reel__img" src="assets/cards/c1.jpg" width="1280" height="720" alt="Una butaca roja vista desde atrás, frente a la pantalla de la sala" loading="lazy" decoding="async">
+              <span class="reel__tag" aria-hidden="true">La vista</span>
+              <span class="reel__num-sm" aria-hidden="true">01</span>
+              <span class="reel__vtitle" aria-hidden="true">Más reservas confiadas</span>
+              <div class="reel__content">
+                <span class="reel__num" aria-hidden="true">01</span>
+                <h3 class="reel__head"><button class="reel__tab" type="button" id="reel-t1" aria-controls="reel-b1" aria-expanded="true">Más reservas confiadas</button></h3>
+                <div class="reel__body" id="reel-b1" role="region" aria-labelledby="reel-t1">
+                  <p>La gente compra con la vista en la mano. Sabe qué va a ver antes de pagar.</p>
+                  <a class="reel__link" href="#demo">Verlo en tu sala <span class="reel__go"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+                </div>
+              </div>
+            </article>
+            <article class="reel__panel">
+              <img class="reel__img" src="assets/cards/c2.jpg" width="1280" height="720" alt="Una persona con su entrada en el lobby, frente a una pantalla roja" loading="lazy" decoding="async">
+              <span class="reel__tag" aria-hidden="true">Boletería</span>
+              <span class="reel__num-sm" aria-hidden="true">02</span>
+              <span class="reel__vtitle" aria-hidden="true">Menos reclamos en boletería</span>
+              <div class="reel__content">
+                <span class="reel__num" aria-hidden="true">02</span>
+                <h3 class="reel__head"><button class="reel__tab" type="button" id="reel-t2" aria-controls="reel-b2" aria-expanded="false">Menos reclamos en boletería</button></h3>
+                <div class="reel__body" id="reel-b2" role="region" aria-labelledby="reel-t2">
+                  <p>El cliente sabe qué le toca. Sin sorpresas cuando entra a la sala.</p>
+                  <a class="reel__link" href="#demo">Verlo en tu sala <span class="reel__go"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+                </div>
+              </div>
+            </article>
+            <article class="reel__panel">
+              <img class="reel__img reel__img--chair" src="assets/cards/c3.jpg" width="1280" height="720" alt="La sala vista desde la puerta: filas de butacas rojas y la pantalla al fondo" loading="lazy" decoding="async">
+              <span class="reel__tag" aria-hidden="true">Premium</span>
+              <span class="reel__num-sm" aria-hidden="true">03</span>
+              <span class="reel__vtitle" aria-hidden="true">Upsell de butacas premium</span>
+              <div class="reel__content">
+                <span class="reel__num" aria-hidden="true">03</span>
+                <h3 class="reel__head"><button class="reel__tab" type="button" id="reel-t3" aria-controls="reel-b3" aria-expanded="false">Upsell de butacas premium</button></h3>
+                <div class="reel__body" id="reel-b3" role="region" aria-labelledby="reel-t3">
+                  <p>Mostrá la diferencia entre fila 4 y recliner. Cuando se ve, el precio se entiende.</p>
+                  <a class="reel__link" href="#demo">Verlo en tu sala <span class="reel__go"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+                </div>
+              </div>
+            </article>
+          </div>
+          <div class="reel__bar">
+            <p class="reel__count"><span data-reel-current>01</span> / 03</p>
+            <div class="reel__progress" aria-hidden="true"><span data-reel-progress></span></div>
+            <div class="reel__nav">
+              <button class="reel__btn" type="button" data-reel-prev aria-label="Beneficio anterior"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M13.5 8h-10M7.5 3.5 3 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="reel__btn" type="button" data-reel-next aria-label="Beneficio siguiente"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2.5 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
-            <div class="ticket__body">
-              <h3 class="ticket__title">Más reservas confiadas</h3>
-              <p>La gente compra con la vista en la mano. Sabe qué va a ver antes de pagar.</p>
-            </div>
-          </article>
-          <article class="ticket">
-            <div class="ticket__stub" aria-hidden="true">
-              <span class="ticket__num">02</span>
-              <span class="ticket__seat">Fila C<br>Asiento 7</span>
-            </div>
-            <div class="ticket__body">
-              <h3 class="ticket__title">Menos reclamos en boletería</h3>
-              <p>El cliente sabe qué le toca. Sin sorpresas cuando entra a la sala.</p>
-            </div>
-          </article>
-          <article class="ticket">
-            <div class="ticket__stub" aria-hidden="true">
-              <span class="ticket__num">03</span>
-              <span class="ticket__seat">Recliner<br>R2</span>
-            </div>
-            <div class="ticket__body">
-              <h3 class="ticket__title">Upsell de butacas premium</h3>
-              <p>Mostrá la diferencia entre fila 4 y recliner. Cuando se ve, el precio se entiende.</p>
-            </div>
-          </article>
+          </div>
         </div>
 
         <div class="pilot">

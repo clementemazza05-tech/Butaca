@@ -59,6 +59,7 @@
 
   initSeatMap();
   initForm();
+  initReel();
 
   if (!root.classList.contains('film-on') || reduceMotion) {
     initSmoothScroll(false);
@@ -420,6 +421,46 @@
       svg.setAttribute('height', h.toFixed(0));
       svg.innerHTML = html;
     });
+  }
+
+  /* ---- Benefits reel: one panel open, the rest fold into strips ---- */
+  function initReel() {
+    const reel = document.querySelector('[data-reel]');
+    if (!reel) return;
+    const panels = [...reel.querySelectorAll('.reel__panel')];
+    const tabs = panels.map((p) => p.querySelector('.reel__tab'));
+    const current = reel.querySelector('[data-reel-current]');
+    const progress = reel.querySelector('[data-reel-progress]');
+    const n = panels.length;
+    let active = 0;
+    reel.classList.add('reel--on');
+
+    const set = (i, focus) => {
+      active = (i + n) % n;
+      panels.forEach((p, j) => {
+        const on = j === active;
+        p.classList.toggle('is-active', on);
+        tabs[j].setAttribute('aria-expanded', String(on));
+        p.querySelectorAll('.reel__body a').forEach((a) => (on ? a.removeAttribute('tabindex') : a.setAttribute('tabindex', '-1')));
+      });
+      current.textContent = String(active + 1).padStart(2, '0');
+      progress.style.width = `${((active + 1) / n) * 100}%`;
+      if (focus) tabs[active].focus();
+    };
+
+    panels.forEach((p, i) => p.addEventListener('click', (e) => {
+      if (i !== active && !e.target.closest('a')) set(i);
+    }));
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => set(i));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); set(i + 1, true); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); set(i - 1, true); }
+      });
+    });
+    reel.querySelector('[data-reel-prev]').addEventListener('click', () => set(active - 1));
+    reel.querySelector('[data-reel-next]').addEventListener('click', () => set(active + 1));
+    set(0);
   }
 
   /* ---- Demo form (front-end only) ---- */
