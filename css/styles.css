@@ -216,6 +216,63 @@ html.film-on .hero-sub {
   transform: translate(var(--tx, 50vw), var(--sub-top, 40vh)) translateX(-50%);
 }
 html.film-on .hero-title__inner { display: block; transform-origin: 50% 60%; }
+
+/* ---------- VHS screen on the hero title + subtitle ----------
+   Light on purpose: a red/cyan channel split, scanlines inside the letters, a soft roll bar,
+   a faint flicker and a tracking hiccup every few seconds. Only in film mode (never with
+   reduced motion). Animated through custom properties so nothing fights the inline
+   opacity/transform the film engine writes. */
+@property --ca { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --fl { syntax: "<number>"; inherits: true; initial-value: 1; }
+html.film-on .hero-title__inner {
+  position: relative;
+  --ca-base: .016em;
+  color: rgba(255, 255, 255, var(--fl));
+  text-shadow:
+    calc(-1 * (var(--ca-base) + var(--ca))) 0 rgba(255, 40, 80, .55),
+    calc(var(--ca-base) + var(--ca)) 0 rgba(60, 210, 255, .42),
+    0 0 24px rgba(255, 90, 110, .45), 0 0 80px rgba(217, 4, 41, .65), 0 2px 0 rgba(120, 0, 20, .25);
+  animation: vhs-flicker 3.7s steps(1, end) infinite, vhs-track 6.5s cubic-bezier(.2, .7, .2, 1) infinite;
+}
+html.film-on .hero-title__inner::before,
+html.film-on .hero-title__inner::after {
+  content: attr(data-text); position: absolute; inset: 0; pointer-events: none;
+  color: transparent; text-shadow: none; -webkit-background-clip: text; background-clip: text;
+}
+/* scanlines, clipped to the letters */
+html.film-on .hero-title__inner::after {
+  background-image: repeating-linear-gradient(180deg, rgba(10, 0, 4, .17) 0 .6px, transparent .6px 2.2px);
+}
+/* a soft bright band rolling down through the letters */
+html.film-on .hero-title__inner::before {
+  background-image: linear-gradient(180deg, transparent 42%, rgba(255, 255, 255, .2) 50%, transparent 58%);
+  background-size: 100% 300%; background-repeat: no-repeat;
+  animation: vhs-roll 5.5s linear infinite;
+}
+html.film-on .hero-sub {
+  color: rgba(255, 255, 255, calc(.9 + var(--fl) * .1));
+  text-shadow:
+    calc(-1.2px - var(--ca) * .4) 0 rgba(255, 40, 80, .5),
+    calc(1.2px + var(--ca) * .4) 0 rgba(60, 210, 255, .38),
+    0 1px 2px rgba(0, 0, 0, .3), 0 4px 18px rgba(0, 0, 0, .25);
+  animation: vhs-flicker 3.7s steps(1, end) infinite, vhs-track-sub 6.5s cubic-bezier(.2, .7, .2, 1) infinite;
+}
+@keyframes vhs-flicker {
+  0% { --fl: 1; } 9% { --fl: .9; } 11% { --fl: 1; } 37% { --fl: .95; } 39% { --fl: 1; }
+  63% { --fl: .86; } 64% { --fl: 1; } 86% { --fl: .94; } 88% { --fl: 1; }
+}
+@keyframes vhs-track {
+  0%, 90%, 100% { transform: none; --ca: 0px; }
+  91% { transform: translateX(-.01em) skewX(-3deg); --ca: .024em; }
+  92.5% { transform: translateX(.008em) skewX(2deg); --ca: .014em; }
+  94% { transform: translateX(-.004em); --ca: .008em; }
+  95.5% { transform: none; --ca: 0px; }
+}
+@keyframes vhs-track-sub {
+  0%, 90%, 100% { --ca: 0px; }
+  91% { --ca: 6px; } 92.5% { --ca: 3px; } 95.5% { --ca: 0px; }
+}
+@keyframes vhs-roll { from { background-position: 0 100%; } to { background-position: 0 -50%; } }
 .scroll-hint {
   display: inline-flex; align-items: center; gap: 12px;
   font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--white);
