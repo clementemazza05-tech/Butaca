@@ -30,6 +30,16 @@ ffmpeg -i clip-original.mp4 -vf scale=1280:-2 -c:v libx264 -g 1 -crf 23 -an -mov
 ffmpeg -i clip-original.mp4 -vf scale=960:-2 -c:v libx264 -g 1 -crf 23 -an -movflags +faststart assets/clip-butaca-mobile.mp4
 ```
 
+Image sequence (the default picture: every frame as WebP, drawn on a canvas and blended with the next one):
+
+```bash
+mkdir -p assets/seq/d assets/seq/m
+ffmpeg -i clip-original.mp4 -vf scale=1280:-2 -c:v libwebp -quality 62 -compression_level 6 assets/seq/d/%03d.webp
+ffmpeg -i clip-original.mp4 -vf scale=828:-2 -c:v libwebp -quality 58 -compression_level 6 assets/seq/m/%03d.webp
+```
+
+If the frame count or rate changes, update `data-seq-count` and `data-seq-fps` on the `<canvas>` in `index.html`. Weight: about 3.8 MB on desktop and 2.3 MB on phones, against 4.6 MB and 3.1 MB for the MP4s.
+
 Posters and fallback frames (frame indices 0, 47, 95, 142, 190, 238 of 239):
 
 ```bash
@@ -52,6 +62,7 @@ Everything lives at the top of `js/main.js`.
 
 - **`BEATS`**: every time is in *video seconds*. Each beat has `in`, `out`, `fade` and `stagger` (extra delay per `.rv` child, in DOM order). `scrim` is a list of `[second, opacity]` keyframes for the darkening layer behind copy. `countUp` sets when the stat numbers run.
 - **`HOLD`** (0.12): the last 12 % of the film's scroll keeps the video parked on its last frame. Times past the clip's end (~9.96 s) fall into the hold, so the whole timeline runs to ~11.3 s. The sheet holds until `vista.out` (10.75 s), then `fadeOut` takes the stage to black so the next section reads as the next scene.
+- **Snap:** when scrolling stops inside the film (160 ms idle, no finger or scrollbar held), `initSnap()` glides to the nearest resting point. There is one point per scene, in the middle of its fully visible window, plus the top of the next section, so the stage never rests mid-transition or on the black hand-off. It leans toward the scroll direction: past 25 % of the gap it moves on. Below the film, scrolling is free. The points are derived from `BEATS`, so retiming moves them too.
 - Film length is `.film { height: 500vh }` (350vh under 768 px) in `css/styles.css`.
 
 ## Tuning the title over the red screen
@@ -72,10 +83,11 @@ Everything lives at the top of `js/main.js`.
 
 ## How the engine works
 
-- The stage is sticky inside a tall `.film` section, which is the pin. A GSAP tween with ScrollTrigger (`scrub: 0.5`) drives a virtual time `T`. A ticker loop seeks `video.currentTime` toward it, never stacking seeks. Lenis smooths wheel scrolling.
-- The video source is set from JS (mobile file under 768 px), and seeking is bound after `loadedmetadata`.
+- The stage is sticky inside a tall `.film` section, which is the pin. A GSAP tween with ScrollTrigger (`scrub: 0.5`) drives a virtual time `T`. Lenis smooths wheel scrolling.
+- **Picture (seq mode, default):** the 239 frames in `assets/seq/` load coarse to fine (every 32nd frame first, then the gaps), so any scroll position has a near frame early. Each render draws the frame for `T` on a canvas and blends the next one over it by the fractional part. That keeps a 24 fps clip fluid at any scroll speed, with no seek latency. The poster stays up until the first frame is drawn.
+- **Video mode** (`?video`, or if the sequence fails to load): the MP4 source is set from JS (mobile file under 768 px), and a ticker loop seeks `video.currentTime` toward `T`, never stacking seeks.
 - **Fallbacks:**
-  - On phones, if the median seek takes over 160 ms, or the video errors, it switches to the six key frames with crossfade and push-in scale.
+  - In video mode on phones, if the median seek takes over 160 ms, or the video errors, it switches to the six key frames with crossfade and push-in scale.
   - If the CDN scripts fail, a native scroll and rAF driver takes over.
   - With `prefers-reduced-motion` or no JS, there's no pinning: poster frames with stacked text.
 

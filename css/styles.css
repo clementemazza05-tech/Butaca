@@ -136,7 +136,7 @@ body::after {
    ========================================================= */
 .film { position: relative; }
 .stage { position: relative; }
-.stage__video, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
+.stage__video, .stage__canvas, .stage__grain, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
 .stage__poster { display: none; }
 
 /* ----- static layout ----- */
@@ -168,6 +168,20 @@ html.film-on .stage__frames img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; will-change: opacity, transform;
 }
 html.film-on.mode-frames .stage__video { visibility: hidden; }
+/* Image-sequence mode: frames are drawn (and blended) on a canvas; the video element stays empty */
+html.film-on .stage__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+html.film-on.mode-seq .stage__canvas { display: block; }
+html.film-on.mode-seq .stage__video { visibility: hidden; }
+/* Film grain over the picture. Overlay blending leaves pure black untouched, so the silhouette
+   (and the deepest shadows) stay clean while the red screen, floor and light pick up the grain.
+   Sits under the scrim and the copy, so text is never grained twice. */
+html.film-on .stage__grain {
+  display: block; position: absolute; inset: -12%; pointer-events: none;
+  mix-blend-mode: overlay; opacity: .85;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.6' intercept='-1.02'/%3E%3CfeFuncG type='linear' slope='2.6' intercept='-1.02'/%3E%3CfeFuncB type='linear' slope='2.6' intercept='-1.02'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 220px 220px;
+  animation: grain .5s steps(4) infinite;
+}
+@media (max-width: 767px) { html.film-on .stage__grain { background-size: 170px 170px; opacity: .75; } }
 html.film-on .stage__scrim {
   display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background:
@@ -212,6 +226,34 @@ html.film-on .hero-sub {
   transform: translate(var(--tx, 50vw), var(--sub-top, 40vh)) translateX(-50%);
 }
 html.film-on .hero-title__inner { display: block; transform-origin: 50% 60%; }
+
+/* ---------- Film grain on the hero title + subtitle ----------
+   A fine, warm-dark grain living inside the letters (edges stay crisp), re-rolled a few
+   times a second like projected film, plus a barely-there projector flicker. Film mode only
+   (never with reduced motion). The flicker runs through a custom property so it never
+   fights the inline opacity the film engine writes. */
+@property --fl { syntax: "<number>"; inherits: true; initial-value: 1; }
+html.film-on .hero-title__inner,
+html.film-on .hero-sub { color: rgba(255, 250, 242, var(--fl)); animation: film-flicker 2.9s steps(1, end) infinite; }
+html.film-on .hero-title__inner { position: relative; }
+html.film-on .hero-title__inner::after,
+html.film-on .hero-sub::after {
+  /* the tight line-height makes the box shorter than the glyphs: grow the layer, pad the text back in place */
+  content: attr(data-text); position: absolute; inset: -.3em -.1em -.2em; padding: .3em .1em .2em; pointer-events: none;
+  color: transparent; text-shadow: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .03 0 0 0 0 .02 2.4 0 0 0 -1.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 70px 70px;
+  -webkit-background-clip: text; background-clip: text;
+  animation: grain-roll .5s steps(4) infinite;
+}
+html.film-on .hero-title__inner::after { opacity: .85; }
+html.film-on .hero-sub::after { background-size: 46px 46px; opacity: .8; }
+@keyframes film-flicker {
+  0% { --fl: 1; } 13% { --fl: .965; } 15% { --fl: 1; } 47% { --fl: .98; } 49% { --fl: 1; } 78% { --fl: .955; } 80% { --fl: 1; }
+}
+@keyframes grain-roll {
+  0% { background-position: 0 0; } 25% { background-position: -23px 11px; }
+  50% { background-position: 17px -29px; } 75% { background-position: -9px 31px; } 100% { background-position: 0 0; }
+}
 .scroll-hint {
   display: inline-flex; align-items: center; gap: 12px;
   font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--white);

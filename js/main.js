@@ -74,6 +74,7 @@
   const stage = film.querySelector('.stage');
   const video = stage.querySelector('.stage__video');
   const poster = stage.querySelector('.stage__poster');
+  const canvas = stage.querySelector('.stage__canvas');
   const frames = [...stage.querySelectorAll('.stage__frames img')];
   const scrim = stage.querySelector('.stage__scrim');
   const fadeEl = stage.querySelector('.stage__fade');
@@ -93,7 +94,8 @@
   let D = 9.958;                       // clip duration, refined on loadedmetadata
   const totalT = () => D / (1 - HOLD); // virtual timeline incl. hold
   let T = 0;                           // current (smoothed) virtual time
-  let mode = params.has('frames') ? 'frames' : 'video';
+  // seq: WebP frames blended on a canvas (default). video: <video> seeking (?video, or if frames fail). frames: 6 key frames.
+  let mode = params.has('frames') ? 'frames' : params.has('video') || !canvas || !canvas.getContext ? 'video' : 'seq';
   let videoReady = false;
   let W = 0, H = 0, cov = { s: 1, ox: 0, oy: 0, w: 0, h: 0 };
   let titleK = 2.62;                   // width of "BUTACA" in Anton, in em (measured after fonts load)
@@ -107,6 +109,11 @@
     const s = Math.max(W / 1920, H / 1080);
     cov = { s, w: 1920 * s, h: 1080 * s, ox: (W - 1920 * s) / 2, oy: (H - 1080 * s) / 2 };
     subH = heroSub.offsetHeight + 10;
+    if (canvas) {
+      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      const cw = Math.round(Math.min(W * dpr, 1920)), ch = Math.round(cw * (H / Math.max(W, 1)));
+      if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; seqDrawn = -1; }
+    }
   }
   const px = (xPct, yPct) => [cov.ox + (xPct / 100) * cov.w, cov.oy + (yPct / 100) * cov.h];
 
@@ -203,7 +210,9 @@
     }
 
     // Picture
-    if (mode === 'frames') renderFrames(vt); else seekTarget = vt;
+    if (mode === 'seq') drawSeq(vt);
+    else if (mode === 'frames') renderFrames(vt);
+    else seekTarget = vt;
 
     if (DEBUG) {
       hud.textContent =
@@ -251,6 +260,75 @@
     video.load();
   }
 
+  /* ---- image sequence: every frame preloaded, drawn on a canvas and blended with the next ----
+     Blending the in-between keeps a 24 fps clip fluid at any scroll speed, with no seek latency. */
+  const seq = { imgs: [], ok: [], n: 0, fps: 24, ctx: null, failed: 0 };
+  let seqDrawn = -1, seqT = 0;
+  function loadSeq() {
+    seq.n = +canvas.dataset.seqCount; seq.fps = +canvas.dataset.seqFps || 24;
+    D = seq.n / seq.fps;
+    seq.ctx = canvas.getContext('2d', { alpha: false });
+    root.classList.add('mode-seq');
+    const base = innerWidth < 768 ? canvas.dataset.seqMobile : canvas.dataset.seqDesktop;
+    // Coarse to fine: every 32nd frame first, then fill in, so any scroll position has a near frame early
+    const order = [], seen = new Set();
+    for (const step of [32, 16, 8, 4, 2, 1]) for (let i = 0; i < seq.n; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+    if (!seen.has(seq.n - 1)) order.splice(1, 0, seq.n - 1);
+    let next = 0;
+    const pump = () => {
+      if (next >= order.length) return;
+      const i = order[next++];
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        seq.ok[i] = true;
+        if (Math.abs(i - seqT * seq.fps) < 34) { seqDrawn = -1; render(true); }
+        pump();
+      };
+      img.onerror = () => {
+        if (++seq.failed > 3 && !seq.ok.some(Boolean)) useVideo('sequence failed');
+        pump();
+      };
+      img.src = `${base}${String(i + 1).padStart(3, '0')}.webp`;
+      seq.imgs[i] = img;
+    };
+    for (let k = 0; k < 6; k++) pump();
+  }
+  function nearestLoaded(i) {
+    for (let d = 0; d < seq.n; d++) {
+      if (seq.ok[i - d]) return i - d;
+      if (seq.ok[i + d]) return i + d;
+    }
+    return -1;
+  }
+  function drawSeq(vt) {
+    seqT = vt;
+    const f = clamp(vt * seq.fps, 0, seq.n - 1);
+    if (Math.abs(f - seqDrawn) < 0.004) return;
+    const a = Math.floor(f), frac = f - a;
+    const ia = seq.ok[a] ? a : nearestLoaded(a);
+    if (ia < 0) return; // nothing yet: the poster stays up
+    const ctx = seq.ctx, cw = canvas.width, ch = canvas.height;
+    const draw = (img, alpha) => {
+      const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+    };
+    draw(seq.imgs[ia], 1);
+    if (ia === a && frac > 0.01 && seq.ok[a + 1]) draw(seq.imgs[a + 1], frac);
+    ctx.globalAlpha = 1;
+    seqDrawn = f;
+    if (poster.style.display !== 'none') poster.style.display = 'none';
+  }
+  function useVideo(reason) {
+    if (mode !== 'seq') return;
+    mode = 'video';
+    root.classList.remove('mode-seq');
+    if (DEBUG) console.info('[butaca] video mode:', reason);
+    loadVideo();
+  }
+
   /* ---- key-frame fallback (crossfade + push-in scale) ---- */
   function useFrames(reason) {
     if (mode === 'frames' && frames[0].src) return;
@@ -284,9 +362,10 @@
 
   /* ---- drivers ---- */
   function start() {
+    if (mode === 'seq') loadSeq();
     layout();
     render(true);
-    loadVideo();
+    if (mode === 'video') loadVideo();
     if (mode === 'frames') useFrames('forced');
 
     if (hasGSAP) {
@@ -311,7 +390,7 @@
       const tick = () => { T += (target - T) * 0.14; render(); seekLoop(); requestAnimationFrame(tick); };
       requestAnimationFrame(tick);
     }
-    initSmoothScroll(true);
+    initSnap(initSmoothScroll(true));
 
     let rz;
     addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { layout(); render(true); }, 80); });
@@ -320,6 +399,64 @@
       ? Promise.race([document.fonts.load('100px Anton'), new Promise((r) => setTimeout(r, 1200))]).catch(() => {})
       : Promise.resolve();
     fontReady.then(() => { measureTitle(); requestAnimationFrame(() => root.classList.add('film-ready')); });
+  }
+
+  /* ---- snap: when scrolling stops inside the film, settle on the nearest full scene ----
+     Resting points sit in the middle of each scene's fully-visible window, plus the top of
+     the next section, so the stage never rests mid-transition or on the black hand-off. */
+  function initSnap(lenis) {
+    const restTimes = () => {
+      const pts = [0];
+      for (const b of beats) {
+        if (b.el.dataset.beat === 'hero') continue;
+        const c = b.cfg;
+        let fullIn = c.in + (c.stagger || 0) * Math.max(0, b.items.length - 1) + c.fade;
+        if (b.el.dataset.beat === 'vista') fullIn = Math.max(fullIn, BEATS.countUp.to);
+        pts.push((fullIn + c.out) / 2);
+      }
+      return pts;
+    };
+    const points = () => {
+      const top = film.offsetTop, range = film.offsetHeight - innerHeight;
+      const ys = restTimes().map((t) => top + clamp(t / totalT()) * range);
+      ys.push(top + film.offsetHeight); // next section at the top of the viewport
+      return ys;
+    };
+
+    let idle, lastY = scrollY, dir = 1, held = false, snapping = false;
+    const settle = () => {
+      if (held || snapping) return;
+      const y = scrollY, ys = points();
+      if (y <= ys[0] + 2 || y >= ys[ys.length - 1] - 2) return; // outside the film: free scroll
+      let i = 0;
+      while (i < ys.length - 2 && y > ys[i + 1]) i++;
+      const a = ys[i], b = ys[i + 1];
+      if (Math.abs(y - a) < 3 || Math.abs(y - b) < 3) return;
+      // Nearest scene, leaning toward the way you were scrolling: a small nudge is enough to move on
+      const f = (y - a) / (b - a);
+      const to = dir > 0 ? (f > 0.25 ? b : a) : (f < 0.75 ? a : b);
+      snapping = true;
+      const done = () => { snapping = false; lastY = scrollY; };
+      setTimeout(() => { snapping = false; }, 1200); // in case a new gesture cut the glide short
+      if (lenis) lenis.scrollTo(to, { duration: 0.9, easing: (x) => 1 - Math.pow(2, -10 * x), onComplete: done });
+      else { scrollTo({ top: to, behavior: 'smooth' }); setTimeout(done, 700); }
+    };
+    const arm = () => { clearTimeout(idle); idle = setTimeout(settle, 160); };
+    addEventListener('scroll', () => {
+      const y = scrollY;
+      if (!snapping && Math.abs(y - lastY) > 0.5) dir = y > lastY ? 1 : -1;
+      lastY = y;
+      arm();
+    }, { passive: true });
+    // Never pull the page away while a finger or the scrollbar is holding it
+    addEventListener('wheel', () => { snapping = false; }, { passive: true });
+    addEventListener('pointerdown', () => { held = true; }, { passive: true });
+    addEventListener('touchstart', () => { held = true; snapping = false; }, { passive: true });
+    const release = () => { held = false; arm(); };
+    addEventListener('pointerup', release, { passive: true });
+    addEventListener('pointercancel', release, { passive: true });
+    addEventListener('touchend', release, { passive: true });
+    addEventListener('touchcancel', release, { passive: true });
   }
 
   start();
@@ -358,6 +495,7 @@
       const focusTarget = id === '#demo' ? document.getElementById('f-cine') : null;
       if (focusTarget) setTimeout(() => focusTarget.focus({ preventScroll: true }), lenis ? 1700 : 600);
     });
+    return lenis;
   }
 
   /* ---- Isometric seat map (inline SVG) ---- */
