@@ -298,39 +298,47 @@
     </section>
 
     <!-- ===== 7. CTA FINAL ===== -->
-    <section class="section section--cta" id="demo" aria-labelledby="h-demo">
+    <section class="section section--talk" id="demo" aria-labelledby="h-demo">
       <div class="wrap">
-        <div class="cta">
-          <div class="cta__copy">
-            <h2 class="display cta__title" id="h-demo">Tu próxima función empieza por la butaca</h2>
-            <p class="cta__sub">Agendá una demo con una sala tuya. Te mostramos cómo se ve tu cine en 3D.</p>
-          </div>
-          <form class="form" novalidate>
-            <div class="field">
-              <label for="f-cine">Nombre del cine</label>
-              <input id="f-cine" name="cine" type="text" autocomplete="organization" required aria-describedby="e-cine">
-              <span class="field__err" id="e-cine" aria-live="polite"></span>
-            </div>
-            <div class="field">
-              <label for="f-email">Email</label>
-              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="e-email">
-              <span class="field__err" id="e-email" aria-live="polite"></span>
-            </div>
-            <div class="field">
-              <label for="f-salas">Cantidad de salas</label>
-              <input id="f-salas" name="salas" type="number" inputmode="numeric" min="1" max="99" required aria-describedby="e-salas">
-              <span class="field__err" id="e-salas" aria-live="polite"></span>
-            </div>
-            <button class="btn btn--light" type="submit">Pedí una demo</button>
-            <p class="form__ok" role="status" aria-live="polite"></p>
-          </form>
-        </div>
+        <div class="talk">
+          <h2 class="display talk__title" id="h-demo">Tu próxima función empieza por la butaca</h2>
+          <p class="talk__sub">Agendá una demo con una sala tuya. Te mostramos cómo se ve tu cine en 3D.</p>
 
-        <ul class="contact">
-          <li class="contact__cell"><span class="micro">Email</span><a href="mailto:hola@butaca.example">hola@butaca.example</a></li>
-          <li class="contact__cell"><span class="micro">WhatsApp</span><a href="https://wa.me/5491100000000">+54 9 11 0000-0000</a></li>
-          <li class="contact__cell"><span class="micro">Estudio</span><span>Hecho en Buenos Aires</span></li>
-        </ul>
+          <form class="bar" novalidate data-talk>
+            <div class="bar__field">
+              <label class="sr-only" for="f-cine">Nombre del cine</label>
+              <input id="f-cine" name="cine" type="text" autocomplete="organization" placeholder="Nombre del cine" required>
+            </div>
+            <div class="bar__field">
+              <label class="sr-only" for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Tu email" required>
+            </div>
+            <div class="bar__field bar__field--select">
+              <label class="sr-only" for="f-salas">Cantidad de salas</label>
+              <select id="f-salas" name="salas" required>
+                <option value="" selected disabled>Cantidad de salas</option>
+                <option value="1 sala">1 sala</option>
+                <option value="2 a 4 salas">2 a 4 salas</option>
+                <option value="5 a 9 salas">5 a 9 salas</option>
+                <option value="10 o más salas">10 o más</option>
+              </select>
+              <svg class="bar__chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <button class="bar__go" type="submit">Pedí una demo</button>
+          </form>
+          <p class="bar__msg" role="status" aria-live="polite" data-talk-msg></p>
+          <div class="talk__done" tabindex="-1" data-talk-done hidden>
+            <p class="talk__done-title" data-talk-done-title></p>
+            <p class="talk__done-txt" data-talk-done-txt></p>
+            <button class="talk__again" type="button" data-talk-again>Cambiar mis datos</button>
+          </div>
+
+          <ul class="talk__contact">
+            <li><a href="mailto:hola@butaca.example">hola@butaca.example</a></li>
+            <li><a href="https://wa.me/5491100000000">WhatsApp +54 9 11 0000-0000</a></li>
+            <li>Hecho en Buenos Aires</li>
+          </ul>
+        </div>
       </div>
     </section>
   </main>
