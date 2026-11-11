@@ -136,7 +136,7 @@ body::after {
    ========================================================= */
 .film { position: relative; }
 .stage { position: relative; }
-.stage__video, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
+.stage__video, .stage__canvas, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
 .stage__poster { display: none; }
 
 /* ----- static layout ----- */
@@ -168,6 +168,10 @@ html.film-on .stage__frames img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; will-change: opacity, transform;
 }
 html.film-on.mode-frames .stage__video { visibility: hidden; }
+/* Image-sequence mode: frames are drawn (and blended) on a canvas; the video element stays empty */
+html.film-on .stage__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+html.film-on.mode-seq .stage__canvas { display: block; }
+html.film-on.mode-seq .stage__video { visibility: hidden; }
 html.film-on .stage__scrim {
   display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background:

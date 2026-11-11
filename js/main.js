@@ -74,6 +74,7 @@
   const stage = film.querySelector('.stage');
   const video = stage.querySelector('.stage__video');
   const poster = stage.querySelector('.stage__poster');
+  const canvas = stage.querySelector('.stage__canvas');
   const frames = [...stage.querySelectorAll('.stage__frames img')];
   const scrim = stage.querySelector('.stage__scrim');
   const fadeEl = stage.querySelector('.stage__fade');
@@ -93,7 +94,8 @@
   let D = 9.958;                       // clip duration, refined on loadedmetadata
   const totalT = () => D / (1 - HOLD); // virtual timeline incl. hold
   let T = 0;                           // current (smoothed) virtual time
-  let mode = params.has('frames') ? 'frames' : 'video';
+  // seq: WebP frames blended on a canvas (default). video: <video> seeking (?video, or if frames fail). frames: 6 key frames.
+  let mode = params.has('frames') ? 'frames' : params.has('video') || !canvas || !canvas.getContext ? 'video' : 'seq';
   let videoReady = false;
   let W = 0, H = 0, cov = { s: 1, ox: 0, oy: 0, w: 0, h: 0 };
   let titleK = 2.62;                   // width of "BUTACA" in Anton, in em (measured after fonts load)
@@ -107,6 +109,11 @@
     const s = Math.max(W / 1920, H / 1080);
     cov = { s, w: 1920 * s, h: 1080 * s, ox: (W - 1920 * s) / 2, oy: (H - 1080 * s) / 2 };
     subH = heroSub.offsetHeight + 10;
+    if (canvas) {
+      const dpr = Math.min(devicePixelRatio || 1, 1.5);
+      const cw = Math.round(Math.min(W * dpr, 1920)), ch = Math.round(cw * (H / Math.max(W, 1)));
+      if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; seqDrawn = -1; }
+    }
   }
   const px = (xPct, yPct) => [cov.ox + (xPct / 100) * cov.w, cov.oy + (yPct / 100) * cov.h];
 
@@ -203,7 +210,9 @@
     }
 
     // Picture
-    if (mode === 'frames') renderFrames(vt); else seekTarget = vt;
+    if (mode === 'seq') drawSeq(vt);
+    else if (mode === 'frames') renderFrames(vt);
+    else seekTarget = vt;
 
     if (DEBUG) {
       hud.textContent =
@@ -251,6 +260,75 @@
     video.load();
   }
 
+  /* ---- image sequence: every frame preloaded, drawn on a canvas and blended with the next ----
+     Blending the in-between keeps a 24 fps clip fluid at any scroll speed, with no seek latency. */
+  const seq = { imgs: [], ok: [], n: 0, fps: 24, ctx: null, failed: 0 };
+  let seqDrawn = -1, seqT = 0;
+  function loadSeq() {
+    seq.n = +canvas.dataset.seqCount; seq.fps = +canvas.dataset.seqFps || 24;
+    D = seq.n / seq.fps;
+    seq.ctx = canvas.getContext('2d', { alpha: false });
+    root.classList.add('mode-seq');
+    const base = innerWidth < 768 ? canvas.dataset.seqMobile : canvas.dataset.seqDesktop;
+    // Coarse to fine: every 32nd frame first, then fill in, so any scroll position has a near frame early
+    const order = [], seen = new Set();
+    for (const step of [32, 16, 8, 4, 2, 1]) for (let i = 0; i < seq.n; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+    if (!seen.has(seq.n - 1)) order.splice(1, 0, seq.n - 1);
+    let next = 0;
+    const pump = () => {
+      if (next >= order.length) return;
+      const i = order[next++];
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        seq.ok[i] = true;
+        if (Math.abs(i - seqT * seq.fps) < 34) { seqDrawn = -1; render(true); }
+        pump();
+      };
+      img.onerror = () => {
+        if (++seq.failed > 3 && !seq.ok.some(Boolean)) useVideo('sequence failed');
+        pump();
+      };
+      img.src = `${base}${String(i + 1).padStart(3, '0')}.webp`;
+      seq.imgs[i] = img;
+    };
+    for (let k = 0; k < 6; k++) pump();
+  }
+  function nearestLoaded(i) {
+    for (let d = 0; d < seq.n; d++) {
+      if (seq.ok[i - d]) return i - d;
+      if (seq.ok[i + d]) return i + d;
+    }
+    return -1;
+  }
+  function drawSeq(vt) {
+    seqT = vt;
+    const f = clamp(vt * seq.fps, 0, seq.n - 1);
+    if (Math.abs(f - seqDrawn) < 0.004) return;
+    const a = Math.floor(f), frac = f - a;
+    const ia = seq.ok[a] ? a : nearestLoaded(a);
+    if (ia < 0) return; // nothing yet: the poster stays up
+    const ctx = seq.ctx, cw = canvas.width, ch = canvas.height;
+    const draw = (img, alpha) => {
+      const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+    };
+    draw(seq.imgs[ia], 1);
+    if (ia === a && frac > 0.01 && seq.ok[a + 1]) draw(seq.imgs[a + 1], frac);
+    ctx.globalAlpha = 1;
+    seqDrawn = f;
+    if (poster.style.display !== 'none') poster.style.display = 'none';
+  }
+  function useVideo(reason) {
+    if (mode !== 'seq') return;
+    mode = 'video';
+    root.classList.remove('mode-seq');
+    if (DEBUG) console.info('[butaca] video mode:', reason);
+    loadVideo();
+  }
+
   /* ---- key-frame fallback (crossfade + push-in scale) ---- */
   function useFrames(reason) {
     if (mode === 'frames' && frames[0].src) return;
@@ -284,9 +362,10 @@
 
   /* ---- drivers ---- */
   function start() {
+    if (mode === 'seq') loadSeq();
     layout();
     render(true);
-    loadVideo();
+    if (mode === 'video') loadVideo();
     if (mode === 'frames') useFrames('forced');
 
     if (hasGSAP) {
