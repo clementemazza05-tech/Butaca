@@ -154,13 +154,15 @@
     const headPx = px(0, HEAD_Y)[1];
     const titleTop = y0 + sh * 0.045;
     const fsW = Math.min(sw * 0.88, W * 0.92) / titleK;
-    const fsH = (headPx - titleTop - subH - 12) / 0.82;
+    const fsH = (headPx - titleTop - subH - 14) / 0.82;
     const fs = Math.max(56, Math.min(fsW, fsH));
     const s = stage.style;
     s.setProperty('--sx', `${x0}px`); s.setProperty('--sy', `${y0}px`);
     s.setProperty('--sw', `${sw}px`); s.setProperty('--sh', `${sh}px`);
-    s.setProperty('--title-fs', `${fs}px`);
+    s.setProperty('--tx', `${x0 + sw / 2}px`);
+    s.setProperty('--title-s', (fs / 100).toFixed(4));
     s.setProperty('--title-top', `${titleTop}px`);
+    s.setProperty('--sub-top', `${titleTop + fs * 0.82 + 12}px`);
     if (DEBUG) s.setProperty('--head-rel', `${((headPx - y0) / sh) * 100}%`);
 
     // Beats

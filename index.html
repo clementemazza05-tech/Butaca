@@ -32,7 +32,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preload" as="image" href="assets/poster-01.jpg" fetchpriority="high">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <!-- Anton blocks briefly so the hero title never reflows; body text swaps in immediately -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -175,17 +177,17 @@
 
         <div class="metrics" role="list" aria-label="Métricas a medir en el piloto">
           <div class="metric" role="listitem">
-            <span class="metric__val">+__ %</span>
+            <span class="metric__val">+XX %</span>
             <span class="metric__lbl">Conversión de reserva online</span>
             <span class="metric__tag">[dato a validar]</span>
           </div>
           <div class="metric" role="listitem">
-            <span class="metric__val">−__ %</span>
+            <span class="metric__val">−XX %</span>
             <span class="metric__lbl">Reclamos por ubicación</span>
             <span class="metric__tag">[dato a validar]</span>
           </div>
           <div class="metric" role="listitem">
-            <span class="metric__val">+__ %</span>
+            <span class="metric__val">+XX %</span>
             <span class="metric__lbl">Venta de butacas premium</span>
             <span class="metric__tag">[dato a validar]</span>
           </div>

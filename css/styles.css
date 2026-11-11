@@ -19,8 +19,7 @@
 
   /* Screen rect in viewport px (written by JS from the measured frame %) */
   --sx: 27vw; --sy: 19vh; --sw: 46vw; --sh: 44vh;
-  --title-fs: 18vw;
-  --title-top: 23vh;
+  --title-top: 21vh;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -142,7 +141,7 @@ body::after {
 html:not(.film-on) .beat {
   position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
   gap: 32px; padding: 120px var(--gutter) 80px;
-  background: linear-gradient(180deg, rgba(15, 15, 18, .55), rgba(15, 15, 18, .85)), var(--bg) center / cover no-repeat;
+  background-color: var(--bg); background-size: cover; background-position: center; background-repeat: no-repeat;
 }
 html:not(.film-on) .beat--hero { background-image: linear-gradient(180deg, rgba(15,15,18,.15), rgba(15,15,18,.6)), url("../assets/poster-01.jpg"); align-items: center; text-align: center; }
 html:not(.film-on) .beat--problema { background-image: linear-gradient(180deg, rgba(15,15,18,.6), rgba(15,15,18,.85)), url("../assets/frames/f2.jpg"); }
@@ -190,12 +189,17 @@ html.film-on .rv, html.film-on [data-beat-el] { will-change: opacity, transform;
   text-shadow: 0 0 24px rgba(255, 90, 110, .45), 0 0 80px rgba(217, 4, 41, .65), 0 2px 0 rgba(120, 0, 20, .25);
 }
 .hero-sub { font-size: clamp(16px, 1.6vw, 22px); font-weight: 600; letter-spacing: .01em; text-shadow: 0 1px 12px rgba(80, 0, 10, .6); }
-html.film-on .hero-lockup {
-  position: absolute; left: calc(var(--sx) + var(--sw) / 2); top: var(--title-top);
-  transform: translateX(-50%); width: max-content; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+/* Positioned with transforms only (no layout shift); JS writes --tx, --title-top, --title-s, --sub-top */
+html.film-on .hero-lockup { position: absolute; inset: 0; }
+html.film-on .hero-title {
+  position: absolute; left: 0; top: 0; font-size: 100px; line-height: .82; white-space: nowrap;
+  transform-origin: 50% 0;
+  transform: translate(var(--tx, 50vw), var(--title-top)) translateX(-50%) scale(var(--title-s, 1.6));
 }
-html.film-on .hero-title { font-size: var(--title-fs); line-height: .82; }
+html.film-on .hero-sub {
+  position: absolute; left: 0; top: 0; white-space: nowrap;
+  transform: translate(var(--tx, 50vw), var(--sub-top, 40vh)) translateX(-50%);
+}
 html.film-on .hero-title__inner { display: block; transform-origin: 50% 60%; }
 .scroll-hint {
   display: inline-flex; align-items: center; gap: 12px;
@@ -430,7 +434,9 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
   .step { border-radius: 24px; }
   .step__arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 34px; }
   .cta { grid-template-columns: 1fr; border-radius: 30px; }
-  .snippet { border-radius: 20px; }
+  .snippet { border-radius: 20px; align-items: flex-start; }
+  .snippet code { white-space: normal; word-break: break-all; }
+  .snippet__dot { margin-top: 6px; }
   .footer__copy { margin-left: 0; width: 100%; }
 }
 
