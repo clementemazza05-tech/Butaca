@@ -430,10 +430,11 @@
     const panels = [...reel.querySelectorAll('.reel__panel')];
     const tabs = panels.map((p) => p.querySelector('.reel__tab'));
     const current = reel.querySelector('[data-reel-current]');
-    const progress = reel.querySelector('[data-reel-progress]');
+    const dotsWrap = reel.querySelector('[data-reel-dots]');
     const n = panels.length;
     let active = 0;
     reel.classList.add('reel--on');
+    const dots = panels.map(() => dotsWrap.appendChild(document.createElement('span')));
 
     const set = (i, focus) => {
       active = (i + n) % n;
@@ -444,7 +445,7 @@
         p.querySelectorAll('.reel__body a').forEach((a) => (on ? a.removeAttribute('tabindex') : a.setAttribute('tabindex', '-1')));
       });
       current.textContent = String(active + 1).padStart(2, '0');
-      progress.style.width = `${((active + 1) / n) * 100}%`;
+      dots.forEach((d, j) => d.classList.toggle('is-on', j === active));
       if (focus) tabs[active].focus();
     };
 

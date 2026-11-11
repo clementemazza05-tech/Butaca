@@ -351,7 +351,7 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .reel__img--c3 { object-position: 60% 50%; }
 .reel__img--c4 { object-position: 58% 50%; }
 .reel__img--c1 { object-position: 62% 56%; }
-.reel__img--c2 { object-position: 60% 52%; }
+.reel__img--c2 { object-position: 60% 22%; }
 .reel__panel::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(0deg, rgba(10, 10, 12, .92) 0%, rgba(10, 10, 12, .55) 34%, rgba(10, 10, 12, 0) 62%),
@@ -390,11 +390,12 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .reel--on .reel__panel:not(.is-active) .reel__content { opacity: 0; transform: translateY(14px); pointer-events: none; transition: opacity .25s, transform .25s; }
 .reel--on .reel__panel.is-active .reel__content { opacity: 1; transform: none; transition: opacity .6s .3s, transform .7s .3s var(--ease); }
 .reel--on .reel__panel:has(.reel__tab:focus-visible) { outline: 2px solid var(--white); outline-offset: 3px; }
-.reel--on .reel__bar { display: flex; align-items: center; gap: 20px; margin-top: 18px; }
+.reel--on .reel__bar { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
 .reel__count { font-size: 13px; font-weight: 700; color: var(--gris); font-variant-numeric: tabular-nums; }
 .reel__count span { color: var(--white); }
-.reel__progress { flex: 1; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .12); overflow: hidden; }
-.reel__progress span { display: block; height: 100%; width: 25%; background: var(--white); transition: width .6s var(--ease); }
+.reel__dots { display: flex; gap: 4px; margin-right: auto; }
+.reel__dots span { width: 30px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .22); transition: background-color .4s var(--ease); }
+.reel__dots span.is-on { background: var(--red-text); }
 .reel__nav { display: flex; gap: 8px; }
 .reel__btn {
   display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
