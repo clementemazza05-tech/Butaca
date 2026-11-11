@@ -60,6 +60,7 @@
   initSeatMap();
   initForm();
   initReel();
+  initFlow();
 
   if (!root.classList.contains('film-on') || reduceMotion) {
     initSmoothScroll(false);
@@ -342,8 +343,12 @@
       const el = id === '#top' ? document.body : document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      if (lenis) lenis.scrollTo(id === '#top' ? 0 : el, { duration: 1.6 });
-      else el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      // Land section headings just under the fixed nav instead of at the section's padded top
+      const heading = id === '#top' ? null : el.querySelector('.section__title');
+      const target = heading || el;
+      const offset = heading ? -(document.querySelector('.nav').offsetHeight + 16) : 0;
+      if (lenis) lenis.scrollTo(id === '#top' ? 0 : target, { duration: 1.6, offset });
+      else window.scrollTo({ top: id === '#top' ? 0 : target.getBoundingClientRect().top + scrollY + offset, behavior: reduceMotion ? 'auto' : 'smooth' });
       history.replaceState(null, '', id);
       const focusTarget = id === '#demo' ? document.getElementById('f-cine') : null;
       if (focusTarget) setTimeout(() => focusTarget.focus({ preventScroll: true }), lenis ? 1700 : 600);
@@ -430,10 +435,11 @@
     const panels = [...reel.querySelectorAll('.reel__panel')];
     const tabs = panels.map((p) => p.querySelector('.reel__tab'));
     const current = reel.querySelector('[data-reel-current]');
-    const progress = reel.querySelector('[data-reel-progress]');
+    const dotsWrap = reel.querySelector('[data-reel-dots]');
     const n = panels.length;
     let active = 0;
     reel.classList.add('reel--on');
+    const dots = panels.map(() => dotsWrap.appendChild(document.createElement('span')));
 
     const set = (i, focus) => {
       active = (i + n) % n;
@@ -444,7 +450,7 @@
         p.querySelectorAll('.reel__body a').forEach((a) => (on ? a.removeAttribute('tabindex') : a.setAttribute('tabindex', '-1')));
       });
       current.textContent = String(active + 1).padStart(2, '0');
-      progress.style.width = `${((active + 1) / n) * 100}%`;
+      dots.forEach((d, j) => d.classList.toggle('is-on', j === active));
       if (focus) tabs[active].focus();
     };
 
@@ -461,6 +467,16 @@
     reel.querySelector('[data-reel-prev]').addEventListener('click', () => set(active - 1));
     reel.querySelector('[data-reel-next]').addEventListener('click', () => set(active + 1));
     set(0);
+  }
+
+  /* ---- Integration cards: on touch screens, open each card as it comes into view ---- */
+  function initFlow() {
+    const cards = document.querySelectorAll('.flow__card');
+    if (!cards.length || !('IntersectionObserver' in window) || matchMedia('(hover: hover)').matches) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => e.target.classList.toggle('is-open', e.intersectionRatio >= 0.6));
+    }, { threshold: [0, 0.6, 1] });
+    cards.forEach((c) => io.observe(c));
   }
 
   /* ---- Demo form (front-end only) ---- */
