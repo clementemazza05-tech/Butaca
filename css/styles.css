@@ -136,7 +136,7 @@ body::after {
    ========================================================= */
 .film { position: relative; }
 .stage { position: relative; }
-.stage__video, .stage__canvas, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
+.stage__video, .stage__canvas, .stage__grain, .stage__frames, .stage__scrim, .stage__vignette, .stage__fade, .seat-pin, .debug { display: none; }
 .stage__poster { display: none; }
 
 /* ----- static layout ----- */
@@ -172,6 +172,16 @@ html.film-on.mode-frames .stage__video { visibility: hidden; }
 html.film-on .stage__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 html.film-on.mode-seq .stage__canvas { display: block; }
 html.film-on.mode-seq .stage__video { visibility: hidden; }
+/* Film grain over the picture. Overlay blending leaves pure black untouched, so the silhouette
+   (and the deepest shadows) stay clean while the red screen, floor and light pick up the grain.
+   Sits under the scrim and the copy, so text is never grained twice. */
+html.film-on .stage__grain {
+  display: block; position: absolute; inset: -12%; pointer-events: none;
+  mix-blend-mode: overlay; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.8' intercept='-.56'/%3E%3CfeFuncG type='linear' slope='1.8' intercept='-.56'/%3E%3CfeFuncB type='linear' slope='1.8' intercept='-.56'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); background-size: 220px 220px;
+  animation: grain .5s steps(4) infinite;
+}
+@media (max-width: 767px) { html.film-on .stage__grain { background-size: 160px 160px; opacity: .42; } }
 html.film-on .stage__scrim {
   display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background:
