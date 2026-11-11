@@ -311,7 +311,7 @@
       const tick = () => { T += (target - T) * 0.14; render(); seekLoop(); requestAnimationFrame(tick); };
       requestAnimationFrame(tick);
     }
-    initSmoothScroll(true);
+    initSnap(initSmoothScroll(true));
 
     let rz;
     addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { layout(); render(true); }, 80); });
@@ -320,6 +320,64 @@
       ? Promise.race([document.fonts.load('100px Anton'), new Promise((r) => setTimeout(r, 1200))]).catch(() => {})
       : Promise.resolve();
     fontReady.then(() => { measureTitle(); requestAnimationFrame(() => root.classList.add('film-ready')); });
+  }
+
+  /* ---- snap: when scrolling stops inside the film, settle on the nearest full scene ----
+     Resting points sit in the middle of each scene's fully-visible window, plus the top of
+     the next section, so the stage never rests mid-transition or on the black hand-off. */
+  function initSnap(lenis) {
+    const restTimes = () => {
+      const pts = [0];
+      for (const b of beats) {
+        if (b.el.dataset.beat === 'hero') continue;
+        const c = b.cfg;
+        let fullIn = c.in + (c.stagger || 0) * Math.max(0, b.items.length - 1) + c.fade;
+        if (b.el.dataset.beat === 'vista') fullIn = Math.max(fullIn, BEATS.countUp.to);
+        pts.push((fullIn + c.out) / 2);
+      }
+      return pts;
+    };
+    const points = () => {
+      const top = film.offsetTop, range = film.offsetHeight - innerHeight;
+      const ys = restTimes().map((t) => top + clamp(t / totalT()) * range);
+      ys.push(top + film.offsetHeight); // next section at the top of the viewport
+      return ys;
+    };
+
+    let idle, lastY = scrollY, dir = 1, held = false, snapping = false;
+    const settle = () => {
+      if (held || snapping) return;
+      const y = scrollY, ys = points();
+      if (y <= ys[0] + 2 || y >= ys[ys.length - 1] - 2) return; // outside the film: free scroll
+      let i = 0;
+      while (i < ys.length - 2 && y > ys[i + 1]) i++;
+      const a = ys[i], b = ys[i + 1];
+      if (Math.abs(y - a) < 3 || Math.abs(y - b) < 3) return;
+      // Nearest scene, leaning toward the way you were scrolling: a small nudge is enough to move on
+      const f = (y - a) / (b - a);
+      const to = dir > 0 ? (f > 0.25 ? b : a) : (f < 0.75 ? a : b);
+      snapping = true;
+      const done = () => { snapping = false; lastY = scrollY; };
+      setTimeout(() => { snapping = false; }, 1200); // in case a new gesture cut the glide short
+      if (lenis) lenis.scrollTo(to, { duration: 0.9, easing: (x) => 1 - Math.pow(2, -10 * x), onComplete: done });
+      else { scrollTo({ top: to, behavior: 'smooth' }); setTimeout(done, 700); }
+    };
+    const arm = () => { clearTimeout(idle); idle = setTimeout(settle, 160); };
+    addEventListener('scroll', () => {
+      const y = scrollY;
+      if (!snapping && Math.abs(y - lastY) > 0.5) dir = y > lastY ? 1 : -1;
+      lastY = y;
+      arm();
+    }, { passive: true });
+    // Never pull the page away while a finger or the scrollbar is holding it
+    addEventListener('wheel', () => { snapping = false; }, { passive: true });
+    addEventListener('pointerdown', () => { held = true; }, { passive: true });
+    addEventListener('touchstart', () => { held = true; snapping = false; }, { passive: true });
+    const release = () => { held = false; arm(); };
+    addEventListener('pointerup', release, { passive: true });
+    addEventListener('pointercancel', release, { passive: true });
+    addEventListener('touchend', release, { passive: true });
+    addEventListener('touchcancel', release, { passive: true });
   }
 
   start();
@@ -358,6 +416,7 @@
       const focusTarget = id === '#demo' ? document.getElementById('f-cine') : null;
       if (focusTarget) setTimeout(() => focusTarget.focus({ preventScroll: true }), lenis ? 1700 : 600);
     });
+    return lenis;
   }
 
   /* ---- Isometric seat map (inline SVG) ---- */
