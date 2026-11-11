@@ -408,11 +408,15 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 
 /* Pilot metrics: blanks to fill together, not fake numbers */
 .pilot { margin-top: clamp(80px, 9vw, 128px); max-width: 880px; }
-.pilot__title { font-size: clamp(24px, 2.2vw, 32px); line-height: 1.15; letter-spacing: -.01em; margin-bottom: 20px; }
+.pilot__head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.pilot__title { font-size: clamp(24px, 2.2vw, 32px); line-height: 1.15; letter-spacing: -.01em; }
 .pilot__list li { display: flex; align-items: baseline; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--line); font-size: 18px; font-weight: 600; }
 .pilot__list li:first-child { border-top: 1px solid var(--line); }
 .pilot__lead { flex: 1; min-width: 24px; border-bottom: 2px dotted rgba(141, 153, 174, .45); transform: translateY(-5px); }
-.pilot__val { font-size: 14px; font-weight: 600; color: var(--gris); white-space: nowrap; }
+.pilot__val { display: inline-flex; align-items: baseline; gap: 12px; white-space: nowrap; }
+.pilot__num { font-family: var(--display); font-size: clamp(30px, 2.6vw, 40px); line-height: 1; font-weight: 400; color: var(--white); font-variant-numeric: tabular-nums; }
+.pilot__range { font-size: 13px; font-weight: 600; color: var(--gris); }
+.pilot__note { margin-top: 16px; max-width: 70ch; font-size: 13.5px; line-height: 1.55; color: var(--gris); }
 
 /* Integration: three step cards. Art on top, a folder-tab panel below that drops on hover to reveal more. */
 .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
