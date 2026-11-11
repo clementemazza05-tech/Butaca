@@ -155,8 +155,8 @@ html:not(.film-on) .seatcard { max-width: 440px; }
 html:not(.film-on) .sheet { max-width: 520px; }
 
 /* ----- film layout ----- */
-html.film-on .film { height: 800vh; }
-@media (max-width: 767px) { html.film-on .film { height: 680vh; } }
+html.film-on .film { height: 500vh; }
+@media (max-width: 767px) { html.film-on .film { height: 350vh; } }
 html.film-on .stage {
   position: sticky; top: 0; height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg);
   contain: layout paint;

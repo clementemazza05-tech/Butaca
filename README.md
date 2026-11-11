@@ -52,8 +52,7 @@ Everything lives at the top of `js/main.js`.
 
 - **`BEATS`**: every time is in *video seconds*. Each beat has `in`, `out`, `fade` and `stagger` (extra delay per `.rv` child, in DOM order). `scrim` is a list of `[second, opacity]` keyframes for the darkening layer behind copy. `countUp` sets when the stat numbers run.
 - **`HOLD`** (0.12): the last 12 % of the film's scroll keeps the video parked on its last frame. Times past the clip's end (~9.96 s) fall into the hold, so the whole timeline runs to ~11.3 s. The sheet holds until `vista.out` (10.75 s), then `fadeOut` takes the stage to black so the next section reads as the next scene.
-- **`DWELL`**: reading pauses. At each `at` second the camera parks while the visitor keeps scrolling, for `len` "scroll seconds", so the copy can be read at a normal scroll speed. The current pauses are the hero, the three problem lines, the solution with the seat map, and the sheet with its numbers counted. Raise `len` if a screen still feels quick.
-- Film length is `.film { height: 800vh }` (680vh under 768 px) in `css/styles.css`. Scroll maps to the timeline including the pauses, so a longer film slows everything evenly.
+- Film length is `.film { height: 500vh }` (350vh under 768 px) in `css/styles.css`.
 
 ## Tuning the title over the red screen
 
