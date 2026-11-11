@@ -51,7 +51,7 @@ Logo: `assets/logo-silla.png` (512 px, transparent) was keyed from the original 
 Everything lives at the top of `js/main.js`.
 
 - **`BEATS`**: every time is in *video seconds*. Each beat has `in`, `out`, `fade` and `stagger` (extra delay per `.rv` child, in DOM order). `scrim` is a list of `[second, opacity]` keyframes for the darkening layer behind copy. `countUp` sets when the stat numbers run.
-- **`HOLD`** (0.08): the last 8 % of the film's scroll keeps the video parked on its last frame. Times past the clip's end (~9.96 s) fall into the hold, so `out: 99` means "stay until the end".
+- **`HOLD`** (0.12): the last 12 % of the film's scroll keeps the video parked on its last frame. Times past the clip's end (~9.96 s) fall into the hold, so the whole timeline runs to ~11.3 s. The sheet holds until `vista.out` (10.75 s), then `fadeOut` takes the stage to black so the next section reads as the next scene.
 - Film length is `.film { height: 500vh }` (350vh under 768 px) in `css/styles.css`.
 
 ## Tuning the title over the red screen
@@ -89,4 +89,4 @@ Everything lives at the top of `js/main.js`.
 
 ## Screenshots
 
-`docs/screens/`: 1440×900 (`d-*`) and 390×844 (`m-*`) at video times 0, 1.5, 3, 5, 7, 9 and 10 s, plus the post-film sections. `debug-*` show the measured screen rect.
+`docs/screens/`: 1440×900 (`d-*`) and 390×844 (`m-*`) at timeline seconds 0, 1.5, 3, 5, 7, 9, 10.4 (sheet holding) and 11.3 (faded to black), plus the post-film sections. `debug-*` show the measured screen rect.
