@@ -101,6 +101,7 @@ body::after {
 }
 .pill--ghost:hover { border-color: rgba(255, 255, 255, .35); }
 .pill--red, .btn--red { background: var(--red); color: var(--white); }
+.nav .pill--red { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45); } /* stays visible over red sections */
 .pill--red:hover, .btn--red:hover { background: #ec0a31; }
 .btn { min-height: 48px; padding: 0 24px; font-size: 15px; }
 .btn--outline { border-color: rgba(255, 255, 255, .4); color: var(--white); background: rgba(255, 255, 255, .02); }
@@ -426,6 +427,58 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .pilot--anim.is-in .pilot__range { opacity: 1; transition: opacity .5s var(--ease) calc(var(--i) * 140ms + 1250ms); }
 .pilot--anim.is-in .pilot__note { opacity: 1; transition: opacity .6s var(--ease) .9s; }
 .pilot__note { margin-top: 16px; max-width: 70ch; font-size: 13.5px; line-height: 1.55; color: var(--gris); }
+
+/* Cada butaca, su vista: a full-screen carousel. A giant row name, the view from it,
+   the neighbouring views peeking blurred above and below. */
+.vistas { position: relative; background: var(--bg); }
+.vistas__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: clamp(96px, 12vw, 140px) var(--gutter) 24px; }
+.vistas__title { font-size: clamp(20px, 1.8vw, 26px); line-height: 1.2; letter-spacing: -.01em; }
+.vistas__tag { flex: none; white-space: nowrap; color: inherit; border-color: currentColor; opacity: .75; }
+.vistas__list { display: grid; gap: 16px; padding: 0 var(--gutter) 96px; }
+.vista {
+  display: grid; grid-template-columns: 1fr 1.1fr; align-items: center; gap: 24px 48px;
+  padding: clamp(28px, 4vw, 56px); border-radius: 28px; background: var(--bg); color: var(--ink);
+}
+.vista__word { grid-row: 1; font-family: var(--display); font-weight: 400; text-transform: uppercase; line-height: .86; font-size: clamp(72px, 12vw, 220px); letter-spacing: -.005em; white-space: nowrap; }
+.vista__cap { grid-row: 2; max-width: 32ch; font-size: clamp(16px, 1.3vw, 19px); font-weight: 500; opacity: .86; }
+.vista__img { grid-column: 2; grid-row: 1 / span 2; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 18px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .7); }
+.vistas__ctrl { display: none; }
+
+/* With JS: one stage, slides stacked, colors and letters change */
+.vistas--on { height: 100vh; height: 100svh; min-height: 620px; overflow: hidden; background: var(--cur-bg, #8D99AE); color: var(--cur-ink, #0F0F12); transition: background-color .9s var(--ease), color .6s var(--ease); }
+.vistas--on .vistas__top { position: absolute; z-index: 3; left: 0; right: 0; top: 0; }
+.vistas--on .vistas__list { position: absolute; inset: 0; padding: 0; display: block; }
+.vistas--on .vista { position: absolute; inset: 0; display: block; padding: 0; border-radius: 0; background: transparent; color: inherit; pointer-events: none; }
+.vistas--on .vista[data-state="active"] { pointer-events: auto; }
+.vistas--on .vista:not([data-state="active"]) .vista__img { pointer-events: auto; cursor: pointer; }
+.vistas--on .vista__word { position: absolute; left: var(--gutter); top: 50%; transform: translateY(-62%); z-index: 2; font-size: clamp(96px, 13.5vw, 250px); }
+.vistas--on .vista__cap { position: absolute; left: var(--gutter); top: calc(50% + clamp(56px, 6.2vw, 116px)); z-index: 2; opacity: 0; transform: translateY(10px); transition: opacity .4s var(--ease), transform .6s var(--ease); }
+.vistas--on .vista[data-state="active"] .vista__cap { opacity: .88; transform: none; transition-delay: .45s; }
+.ch { display: inline-block; transition: transform .85s var(--ease), opacity .5s var(--ease), filter .5s var(--ease); transition-delay: calc(var(--d) * 32ms); will-change: transform; }
+.vista[data-state="future"] .ch { transform: translateY(.5em) rotate(9deg) skewX(-10deg); opacity: 0; filter: blur(6px); }
+.vista[data-state="past"] .ch { transform: translateY(-.5em) rotate(-9deg) skewX(10deg); opacity: 0; filter: blur(6px); }
+.vistas--on .vista__img {
+  position: absolute; z-index: 1; right: var(--gutter); top: 50%; width: min(46vw, 760px); height: auto; aspect-ratio: 16 / 10;
+  transform: translateY(calc(-50% + var(--k, 0) * 112%)) scale(var(--sc, 1)); filter: blur(var(--bl, 0)); opacity: var(--op, 1);
+  transition: transform 1s var(--ease), filter .8s var(--ease), opacity .8s var(--ease);
+}
+.vistas--on .vistas__ctrl { position: absolute; z-index: 3; left: var(--gutter); bottom: clamp(28px, 4vw, 44px); display: flex; align-items: center; gap: 10px; }
+.vistas__btn {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; cursor: pointer;
+  border: 1.5px solid currentColor; background: transparent; color: inherit; transition: background-color .2s, transform .15s var(--ease);
+}
+.vistas__btn:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.vistas__btn:active { transform: scale(.94); }
+.vistas__btn:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.vistas__count { margin-left: 8px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 767px) {
+  .vista { grid-template-columns: 1fr; }
+  .vista__img { grid-column: 1; grid-row: 3; }
+  .vistas--on .vista__word { top: 30%; transform: none; font-size: clamp(72px, 22vw, 120px); }
+  .vistas--on .vista__cap { top: calc(30% + clamp(68px, 20vw, 108px)); right: var(--gutter); }
+  .vistas--on .vista__img { right: auto; left: 50%; top: auto; bottom: 120px; width: calc(100% - 2 * var(--gutter)); transform: translateX(calc(-50% + var(--k, 0) * 106%)) scale(var(--sc, 1)); }
+}
 
 /* Integration: three step cards. Art on top, a folder-tab panel below that drops on hover to reveal more. */
 .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }

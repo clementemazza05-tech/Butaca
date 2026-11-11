@@ -100,3 +100,9 @@ python3 docs/simulacion/simulacion.py
 ```
 
 These are estimates, not results. Change the ranges when you have real numbers from a cinema, rerun, and update the three values and ranges in `index.html`.
+
+## Cada butaca, su vista (seat-view carousel)
+
+The section between "Por qué a tu cine" and "Cómo se integra" is a full-screen carousel: one row name per slide, the view from that seat, and the neighbouring views peeking blurred. Each slide sets its own background and text color with `--bg` and `--ink` in `index.html`.
+
+The images in `assets/vistas/` (`v1.jpg`, `v2.jpg`, `v3.jpg`, `v4.webp`, `v5.jpg`, front to back: Fila A, Fila E, Fila H, Recliner, Fila K) are placeholders made from clip stills. Replace them with real views from those seats, keeping the file names or updating `src`, `width` and `height` on each `<img>`. Square or 16:10 images both work.
