@@ -62,7 +62,6 @@
   initReel();
   initFlow();
   initPilot();
-  initVistas();
 
   if (!root.classList.contains('film-on') || reduceMotion) {
     initSmoothScroll(false);
@@ -513,86 +512,6 @@
       });
     }, { threshold: 0.35 });
     io.observe(pilot);
-  }
-
-  /* ---- Cada butaca, su vista: full-screen carousel ---- */
-  function initVistas() {
-    const sec = document.querySelector('[data-vistas]');
-    if (!sec) return;
-    const slides = [...sec.querySelectorAll('.vista')];
-    const current = sec.querySelector('[data-vistas-current]');
-    const n = slides.length;
-    let at = 0;
-    // split each row name into letters for the wave
-    slides.forEach((sl) => {
-      const w = sl.querySelector('.vista__word');
-      const text = w.textContent;
-      w.setAttribute('aria-label', text);
-      w.textContent = '';
-      [...text].forEach((c, i) => {
-        const sp = document.createElement('span');
-        sp.className = 'ch';
-        sp.setAttribute('aria-hidden', 'true');
-        sp.style.setProperty('--d', i);
-        sp.textContent = c === ' ' ? '\u00a0' : c;
-        w.append(sp);
-      });
-    });
-    sec.classList.add('vistas--on');
-
-    // fit each row name into the space left of the view (full width on phones)
-    const fit = () => {
-      slides.forEach((sl) => {
-        const w = sl.querySelector('.vista__word');
-        const img = sl.querySelector('.vista__img');
-        w.style.fontSize = '';
-        const left = w.offsetLeft;
-        const avail = innerWidth < 768 ? sec.clientWidth - 2 * left : img.offsetLeft - left - 32;
-        const natural = w.scrollWidth;
-        if (natural > avail && avail > 0) w.style.fontSize = `${parseFloat(getComputedStyle(w).fontSize) * (avail / natural)}px`;
-      });
-    };
-    let rz;
-    addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(fit, 100); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit); else fit();
-
-    const go = (i) => {
-      at = (i + n) % n;
-      slides.forEach((sl, j) => {
-        let k = j - at;
-        if (k > n / 2) k -= n;          // wrap so neighbours peek on both sides
-        if (k < -n / 2) k += n;
-        sl.dataset.state = k === 0 ? 'active' : k < 0 ? 'past' : 'future';
-        sl.setAttribute('aria-hidden', String(k !== 0));
-        const img = sl.querySelector('.vista__img');
-        img.style.setProperty('--k', k);
-        img.style.setProperty('--sc', k === 0 ? 1 : 0.86);
-        img.style.setProperty('--bl', k === 0 ? '0px' : '10px');
-        img.style.setProperty('--op', k === 0 ? 1 : Math.abs(k) === 1 ? 0.55 : 0);
-      });
-      const cs = getComputedStyle(slides[at]);
-      sec.style.setProperty('--cur-bg', cs.getPropertyValue('--bg').trim());
-      sec.style.setProperty('--cur-ink', cs.getPropertyValue('--ink').trim());
-      current.textContent = String(at + 1);
-    };
-    sec.querySelector('[data-vistas-next]').addEventListener('click', () => go(at + 1));
-    sec.querySelector('[data-vistas-prev]').addEventListener('click', () => go(at - 1));
-    sec.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); go(at + 1); }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); go(at - 1); }
-    });
-    // click a peeking view to jump to it
-    slides.forEach((sl, j) => sl.querySelector('.vista__img').addEventListener('click', () => { if (j !== at) go(j); }));
-    // swipe on touch screens (horizontal, so vertical page scroll stays free)
-    let x0 = null, y0 = null;
-    sec.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
-    sec.addEventListener('touchend', (e) => {
-      if (x0 === null) return;
-      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(at + (dx < 0 ? 1 : -1));
-      x0 = null;
-    }, { passive: true });
-    go(0);
   }
 
   /* ---- Hablemos: one-line demo request (front-end only) ---- */
