@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BUTACA · Mostrá la vista desde cada butaca de tu cine</title>
+  <meta name="description" content="BUTACA suma a la venta online de tu cine un selector de butacas en 3D: tus clientes ven la pantalla desde su asiento antes de pagar. Pedí una demo.">
+  <meta name="theme-color" content="#0F0F12">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:title" content="BUTACA · Tu sala en tres dimensiones">
+  <meta property="og:description" content="Un selector de butacas en 3D para tu cine. Que elijan dónde sentarse viendo exactamente qué van a ver.">
+  <meta property="og:image" content="assets/poster-01.jpg">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1080">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <script>
+    // Film mode only when motion is welcome. Without JS or with reduced motion the page stays static.
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('film-on');
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preload" as="image" href="assets/poster-01.jpg" fetchpriority="high">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="nav" role="banner">
+    <a class="pill pill--brand" href="#top" aria-label="BUTACA, volver al inicio">
+      <img src="assets/logo-silla-96.png" width="28" height="28" alt="">
+      <span>BUTACA</span>
+    </a>
+    <nav class="nav__links" aria-label="Principal">
+      <a class="pill pill--ghost nav__opt" href="#como">Cómo funciona</a>
+      <a class="pill pill--ghost nav__opt" href="#por-que">Para cines</a>
+      <a class="pill pill--red" href="#demo">Pedí una demo</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- ===== THE FILM: one pinned stage, scroll = camera ===== -->
+    <section class="film" aria-label="Presentación de BUTACA">
+      <div class="stage">
+        <img class="stage__poster" src="assets/poster-01.jpg" width="1920" height="1080" alt="" fetchpriority="high">
+        <video class="stage__video" muted playsinline preload="auto" poster="assets/poster-01.jpg"
+               width="1280" height="720" aria-hidden="true" tabindex="-1"
+               data-src-desktop="assets/clip-butaca.mp4" data-src-mobile="assets/clip-butaca-mobile.mp4"></video>
+        <div class="stage__frames" aria-hidden="true">
+          <img data-src="assets/frames/f1.jpg" width="960" height="540" alt="">
+          <img data-src="assets/frames/f2.jpg" width="960" height="540" alt="">
+          <img data-src="assets/frames/f3.jpg" width="960" height="540" alt="">
+          <img data-src="assets/frames/f4.jpg" width="960" height="540" alt="">
+          <img data-src="assets/frames/f5.jpg" width="960" height="540" alt="">
+          <img data-src="assets/frames/f6.jpg" width="960" height="540" alt="">
+        </div>
+        <div class="stage__scrim" aria-hidden="true"></div>
+        <div class="stage__vignette" aria-hidden="true"></div>
+
+        <!-- A) HERO -->
+        <div class="beat beat--hero" data-beat="hero">
+          <div class="hero-lockup">
+            <h1 class="hero-title" data-beat-el="heroTitle"><span class="hero-title__inner">BUTACA</span><span class="sr-only">: selector de butacas en 3D para cines</span></h1>
+            <p class="hero-sub rv">Tu sala en tres dimensiones.</p>
+          </div>
+          <p class="scroll-hint rv" aria-hidden="true"><span class="scroll-hint__line"></span>Scrolleá</p>
+        </div>
+
+        <!-- B) PROBLEMA -->
+        <div class="beat beat--problema" data-beat="problema">
+          <h2 class="sr-only">El problema</h2>
+          <div class="floor">
+            <p class="floor__line rv"><span class="floor__dash" aria-hidden="true"></span>Hoy tus clientes eligen butaca a ciegas.</p>
+            <p class="floor__line rv"><span class="floor__dash" aria-hidden="true"></span>Un mapa gris. Cero idea de qué van a ver.</p>
+            <p class="floor__line rv"><span class="floor__dash" aria-hidden="true"></span>Fila A o fila K: el mismo precio, la misma duda.</p>
+          </div>
+        </div>
+
+        <!-- C) SOLUCIÓN -->
+        <div class="beat beat--solucion" data-beat="solucion">
+          <div class="sol-copy">
+            <p class="kicker rv">La solución</p>
+            <h2 class="display sol-title rv">Elegí donde<br>te sentás.</h2>
+            <p class="sol-sub rv">Y mirá exactamente qué vas a ver.</p>
+          </div>
+          <aside class="seatcard glass rv" aria-label="Ejemplo de selector de butacas">
+            <div class="seatcard__head">
+              <span class="seatcard__sala">Sala 3 · Función 21:40</span>
+              <span class="tag">Demo</span>
+            </div>
+            <svg class="seatmap" role="img" aria-label="Mapa de la sala en 3D con la butaca H14 seleccionada" data-seatmap></svg>
+            <ul class="legend">
+              <li><i class="sw sw--free" aria-hidden="true"></i>Libre</li>
+              <li><i class="sw sw--busy" aria-hidden="true"></i>Ocupada</li>
+              <li><i class="sw sw--sel" aria-hidden="true"></i>Tu butaca</li>
+            </ul>
+            <div class="seatcard__sel">
+              <div>
+                <span class="micro">Seleccionada</span>
+                <strong>Fila H · Asiento 14</strong>
+              </div>
+              <span class="seatcard__view" aria-hidden="true">Ver vista →</span>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Marker over the seat in the last shot -->
+        <div class="seat-pin" aria-hidden="true"><span class="seat-pin__dot"></span>H14 · tu butaca</div>
+
+        <!-- D) LA VISTA -->
+        <div class="beat beat--vista" data-beat="vista">
+          <h2 class="sr-only">La vista desde tu butaca</h2>
+          <div class="sheet glass rv" data-rise="sheet">
+            <span class="sheet__grab" aria-hidden="true"></span>
+            <p class="micro micro--red rv">Vista completa</p>
+            <h3 class="display sheet__title rv">Fila H, asiento 14</h3>
+            <ul class="stats rv">
+              <li class="stat"><span class="stat__val"><span class="count" data-to="13.3" data-dec="1">13,3</span><small> m</small></span><span class="stat__lbl">a la pantalla</span></li>
+              <li class="stat"><span class="stat__val"><span class="count" data-to="45" data-dec="0">45</span><small>°</small></span><span class="stat__lbl">campo de visión</span></li>
+              <li class="stat"><span class="stat__val"><span class="count" data-to="3.3" data-dec="1">3,3</span><small> m</small></span><span class="stat__lbl">a la derecha del centro</span></li>
+            </ul>
+            <p class="sheet__note rv">Valores de demo</p>
+            <div class="sheet__ctas rv">
+              <a class="btn btn--red" href="#demo">Reservar asiento</a>
+              <a class="btn btn--outline" href="#como">
+                <svg class="hex" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 1.8 21 7v10l-9 5.2L3 17V7z" fill="none" stroke="currentColor" stroke-width="1.6"/><text x="12" y="15.2" text-anchor="middle" font-size="7.5" font-weight="700" fill="currentColor" font-family="Plus Jakarta Sans, sans-serif">3D</text></svg>
+                Ver sala 3D
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="debug" aria-hidden="true" hidden>
+          <div class="debug__rect"></div>
+          <div class="debug__hud"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. POR QUÉ ===== -->
+    <section class="section" id="por-que" aria-labelledby="h-porque">
+      <span id="contenido" class="anchor" tabindex="-1"></span>
+      <div class="wrap">
+        <p class="kicker">Para cines</p>
+        <h2 class="display section__title" id="h-porque">Por qué a tu cine</h2>
+        <div class="cards">
+          <article class="card">
+            <span class="card__num" aria-hidden="true">01</span>
+            <h3 class="card__title">Más reservas confiadas</h3>
+            <p>La gente compra con la vista en la mano. Sabe qué va a ver antes de pagar.</p>
+          </article>
+          <article class="card">
+            <span class="card__num" aria-hidden="true">02</span>
+            <h3 class="card__title">Menos reclamos en boletería</h3>
+            <p>El cliente sabe qué le toca. Sin sorpresas cuando entra a la sala.</p>
+          </article>
+          <article class="card">
+            <span class="card__num" aria-hidden="true">03</span>
+            <h3 class="card__title">Upsell de butacas premium</h3>
+            <p>Mostrá la diferencia entre fila 4 y recliner. Cuando se ve, el precio se entiende.</p>
+          </article>
+        </div>
+
+        <div class="metrics" role="list" aria-label="Métricas a medir en el piloto">
+          <div class="metric" role="listitem">
+            <span class="metric__val">+__ %</span>
+            <span class="metric__lbl">Conversión de reserva online</span>
+            <span class="metric__tag">[dato a validar]</span>
+          </div>
+          <div class="metric" role="listitem">
+            <span class="metric__val">−__ %</span>
+            <span class="metric__lbl">Reclamos por ubicación</span>
+            <span class="metric__tag">[dato a validar]</span>
+          </div>
+          <div class="metric" role="listitem">
+            <span class="metric__val">+__ %</span>
+            <span class="metric__lbl">Venta de butacas premium</span>
+            <span class="metric__tag">[dato a validar]</span>
+          </div>
+        </div>
+        <p class="fine">Estos números los medimos con vos durante el piloto.</p>
+      </div>
+    </section>
+
+    <!-- ===== 6. CÓMO SE INTEGRA ===== -->
+    <section class="section" id="como" aria-labelledby="h-como">
+      <div class="wrap">
+        <p class="kicker">Integración</p>
+        <h2 class="display section__title" id="h-como">Cómo se integra</h2>
+        <ol class="steps">
+          <li class="step"><span class="step__n">1</span><span class="step__txt">Cargás tu sala <em>(plano o fotos)</em></span></li>
+          <li class="step__arrow" aria-hidden="true">→</li>
+          <li class="step"><span class="step__n">2</span><span class="step__txt">Generamos el visor 3D</span></li>
+          <li class="step__arrow" aria-hidden="true">→</li>
+          <li class="step"><span class="step__n">3</span><span class="step__txt">Lo sumás a tu web o app con un snippet</span></li>
+        </ol>
+        <div class="snippet" aria-label="Ejemplo ilustrativo del snippet de integración">
+          <span class="snippet__dot" aria-hidden="true"></span>
+          <code><span class="c-tag">&lt;script</span> <span class="c-attr">src</span>=<span class="c-str">"https://butaca.example/visor.js"</span> <span class="c-attr">data-sala</span>=<span class="c-str">"sala-3"</span><span class="c-tag">&gt;&lt;/script&gt;</span></code>
+          <span class="snippet__lbl">Ejemplo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 7. CTA FINAL ===== -->
+    <section class="section section--cta" id="demo" aria-labelledby="h-demo">
+      <div class="wrap">
+        <div class="cta">
+          <div class="cta__copy">
+            <h2 class="display cta__title" id="h-demo">Tu próxima función empieza por la butaca</h2>
+            <p class="cta__sub">Agendá una demo con una sala tuya. Te mostramos cómo se ve tu cine en 3D.</p>
+          </div>
+          <form class="form" novalidate>
+            <div class="field">
+              <label for="f-cine">Nombre del cine</label>
+              <input id="f-cine" name="cine" type="text" autocomplete="organization" required aria-describedby="e-cine">
+              <span class="field__err" id="e-cine" aria-live="polite"></span>
+            </div>
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="e-email">
+              <span class="field__err" id="e-email" aria-live="polite"></span>
+            </div>
+            <div class="field">
+              <label for="f-salas">Cantidad de salas</label>
+              <input id="f-salas" name="salas" type="number" inputmode="numeric" min="1" max="99" required aria-describedby="e-salas">
+              <span class="field__err" id="e-salas" aria-live="polite"></span>
+            </div>
+            <button class="btn btn--light" type="submit">Pedí una demo</button>
+            <p class="form__ok" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <ul class="contact">
+          <li class="contact__cell"><span class="micro">Email</span><a href="mailto:hola@butaca.example">hola@butaca.example</a></li>
+          <li class="contact__cell"><span class="micro">WhatsApp</span><a href="https://wa.me/5491100000000">+54 9 11 0000-0000</a></li>
+          <li class="contact__cell"><span class="micro">Estudio</span><span>Hecho en Buenos Aires</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== 8. FOOTER ===== -->
+  <footer class="footer">
+    <div class="wrap footer__row">
+      <a class="footer__brand" href="#top"><img src="assets/logo-silla-96.png" width="24" height="24" alt="" loading="lazy">BUTACA</a>
+      <nav aria-label="Legal" class="footer__links">
+        <a href="#">Términos</a>
+        <a href="#">Privacidad</a>
+        <a href="#">Cookies</a>
+      </nav>
+      <p class="footer__copy">© 2026 BUTACA. Los valores de la demo son ilustrativos.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.9/lenis.min.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
