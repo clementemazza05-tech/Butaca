@@ -93,7 +93,6 @@
         <!-- C) SOLUCIÓN -->
         <div class="beat beat--solucion" data-beat="solucion">
           <div class="sol-copy">
-            <p class="kicker rv">La solución</p>
             <h2 class="display sol-title rv">Elegí donde<br>te sentás.</h2>
             <p class="sol-sub rv">Y mirá exactamente qué vas a ver.</p>
           </div>
@@ -113,7 +112,7 @@
                 <span class="micro">Seleccionada</span>
                 <strong>Fila H · Asiento 14</strong>
               </div>
-              <span class="seatcard__view" aria-hidden="true">Ver vista →</span>
+              <span class="seatcard__view" aria-hidden="true">Ver vista <svg class="i-arrow" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2.5 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             </div>
           </aside>
         </div>
@@ -126,14 +125,16 @@
           <h2 class="sr-only">La vista desde tu butaca</h2>
           <div class="sheet glass rv" data-rise="sheet">
             <span class="sheet__grab" aria-hidden="true"></span>
-            <p class="micro micro--red rv">Vista completa</p>
+            <div class="sheet__bar rv">
+              <span class="sheet__status">Vista completa</span>
+              <span class="tag">Valores de demo</span>
+            </div>
             <h3 class="display sheet__title rv">Fila H, asiento 14</h3>
             <ul class="stats rv">
               <li class="stat"><span class="stat__val"><span class="count" data-to="13.3" data-dec="1">13,3</span><small> m</small></span><span class="stat__lbl">a la pantalla</span></li>
               <li class="stat"><span class="stat__val"><span class="count" data-to="45" data-dec="0">45</span><small>°</small></span><span class="stat__lbl">campo de visión</span></li>
               <li class="stat"><span class="stat__val"><span class="count" data-to="3.3" data-dec="1">3,3</span><small> m</small></span><span class="stat__lbl">a la derecha del centro</span></li>
             </ul>
-            <p class="sheet__note rv">Valores de demo</p>
             <div class="sheet__ctas rv">
               <a class="btn btn--red" href="#demo">Reservar asiento</a>
               <a class="btn btn--outline" href="#como">
@@ -143,6 +144,9 @@
             </div>
           </div>
         </div>
+
+        <!-- Fade to black: the film ends and the next scene begins -->
+        <div class="stage__fade" aria-hidden="true"></div>
 
         <div class="debug" aria-hidden="true" hidden>
           <div class="debug__rect"></div>
@@ -155,58 +159,59 @@
     <section class="section" id="por-que" aria-labelledby="h-porque">
       <span id="contenido" class="anchor" tabindex="-1"></span>
       <div class="wrap">
-        <p class="kicker">Para cines</p>
         <h2 class="display section__title" id="h-porque">Por qué a tu cine</h2>
-        <div class="cards">
-          <article class="card">
-            <span class="card__num" aria-hidden="true">01</span>
-            <h3 class="card__title">Más reservas confiadas</h3>
-            <p>La gente compra con la vista en la mano. Sabe qué va a ver antes de pagar.</p>
+        <div class="tickets">
+          <article class="ticket">
+            <div class="ticket__stub" aria-hidden="true">
+              <span class="ticket__num">01</span>
+              <span class="ticket__seat">Fila H<br>Asiento 14</span>
+            </div>
+            <div class="ticket__body">
+              <h3 class="ticket__title">Más reservas confiadas</h3>
+              <p>La gente compra con la vista en la mano. Sabe qué va a ver antes de pagar.</p>
+            </div>
           </article>
-          <article class="card">
-            <span class="card__num" aria-hidden="true">02</span>
-            <h3 class="card__title">Menos reclamos en boletería</h3>
-            <p>El cliente sabe qué le toca. Sin sorpresas cuando entra a la sala.</p>
+          <article class="ticket">
+            <div class="ticket__stub" aria-hidden="true">
+              <span class="ticket__num">02</span>
+              <span class="ticket__seat">Fila C<br>Asiento 7</span>
+            </div>
+            <div class="ticket__body">
+              <h3 class="ticket__title">Menos reclamos en boletería</h3>
+              <p>El cliente sabe qué le toca. Sin sorpresas cuando entra a la sala.</p>
+            </div>
           </article>
-          <article class="card">
-            <span class="card__num" aria-hidden="true">03</span>
-            <h3 class="card__title">Upsell de butacas premium</h3>
-            <p>Mostrá la diferencia entre fila 4 y recliner. Cuando se ve, el precio se entiende.</p>
+          <article class="ticket">
+            <div class="ticket__stub" aria-hidden="true">
+              <span class="ticket__num">03</span>
+              <span class="ticket__seat">Recliner<br>R2</span>
+            </div>
+            <div class="ticket__body">
+              <h3 class="ticket__title">Upsell de butacas premium</h3>
+              <p>Mostrá la diferencia entre fila 4 y recliner. Cuando se ve, el precio se entiende.</p>
+            </div>
           </article>
         </div>
 
-        <div class="metrics" role="list" aria-label="Métricas a medir en el piloto">
-          <div class="metric" role="listitem">
-            <span class="metric__val">+XX %</span>
-            <span class="metric__lbl">Conversión de reserva online</span>
-            <span class="metric__tag">[dato a validar]</span>
-          </div>
-          <div class="metric" role="listitem">
-            <span class="metric__val">−XX %</span>
-            <span class="metric__lbl">Reclamos por ubicación</span>
-            <span class="metric__tag">[dato a validar]</span>
-          </div>
-          <div class="metric" role="listitem">
-            <span class="metric__val">+XX %</span>
-            <span class="metric__lbl">Venta de butacas premium</span>
-            <span class="metric__tag">[dato a validar]</span>
-          </div>
+        <div class="pilot">
+          <h3 class="pilot__title">Lo que medimos en tu piloto</h3>
+          <ul class="pilot__list">
+            <li><span class="pilot__lbl">Conversión de reserva online</span><span class="pilot__lead" aria-hidden="true"></span><span class="pilot__val">[dato a validar]</span></li>
+            <li><span class="pilot__lbl">Reclamos por ubicación</span><span class="pilot__lead" aria-hidden="true"></span><span class="pilot__val">[dato a validar]</span></li>
+            <li><span class="pilot__lbl">Venta de butacas premium</span><span class="pilot__lead" aria-hidden="true"></span><span class="pilot__val">[dato a validar]</span></li>
+          </ul>
         </div>
-        <p class="fine">Estos números los medimos con vos durante el piloto.</p>
       </div>
     </section>
 
     <!-- ===== 6. CÓMO SE INTEGRA ===== -->
     <section class="section" id="como" aria-labelledby="h-como">
       <div class="wrap">
-        <p class="kicker">Integración</p>
         <h2 class="display section__title" id="h-como">Cómo se integra</h2>
-        <ol class="steps">
-          <li class="step"><span class="step__n">1</span><span class="step__txt">Cargás tu sala <em>(plano o fotos)</em></span></li>
-          <li class="step__arrow" aria-hidden="true">→</li>
-          <li class="step"><span class="step__n">2</span><span class="step__txt">Generamos el visor 3D</span></li>
-          <li class="step__arrow" aria-hidden="true">→</li>
-          <li class="step"><span class="step__n">3</span><span class="step__txt">Lo sumás a tu web o app con un snippet</span></li>
+        <ol class="strip">
+          <li class="frame"><span class="frame__n" aria-hidden="true">1</span><p class="frame__txt">Cargás tu sala <em>Plano o fotos.</em></p></li>
+          <li class="frame"><span class="frame__n" aria-hidden="true">2</span><p class="frame__txt">Generamos el visor 3D</p></li>
+          <li class="frame"><span class="frame__n" aria-hidden="true">3</span><p class="frame__txt">Lo sumás a tu web o app con un snippet</p></li>
         </ol>
         <div class="snippet" aria-label="Ejemplo ilustrativo del snippet de integración">
           <span class="snippet__dot" aria-hidden="true"></span>

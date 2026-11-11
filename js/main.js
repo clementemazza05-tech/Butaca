@@ -8,8 +8,8 @@
 
   /* ---------------------------------------------------------
      RETIME HERE. All times are video seconds (clip is ~9.96 s).
-     Times past the clip's end fall into the HOLD (video parked on
-     its last frame), so "out: 99" means "stay until the end".
+     Times past the clip's end (~9.96 s) fall into the HOLD (video
+     parked on its last frame); the whole timeline ends at ~11.3 s.
        in / out : when an element starts entering / leaving
        fade     : seconds an enter or exit takes
        stagger  : extra delay per child (.rv) in DOM order
@@ -19,13 +19,14 @@
     heroTitle: { in: -1,   out: 2.0,  fade: 0.8 },                 // title scales up + fades as the doors open
     problema:  { in: 2.3,  out: 4.3,  fade: 0.4,  stagger: 0.32 },
     solucion:  { in: 4.75, out: 7.45, fade: 0.45, stagger: 0.16 },
-    vista:     { in: 7.9,  out: 99,   fade: 0.55, stagger: 0.12 },
-    pin:       { in: 8.4,  out: 99,   fade: 0.4 },
+    vista:     { in: 7.9,  out: 10.75, fade: 0.45, stagger: 0.12 },
+    pin:       { in: 8.4,  out: 10.75, fade: 0.4 },
     countUp:   { from: 8.7, to: 9.7 },
+    fadeOut:   { from: 10.7, to: 11.25 }, // fade to black during the hold, into the next section
     // darkening scrim behind copy: [video second, opacity]
     scrim: [[0, 0.1], [1.6, 0.15], [2.4, 0.85], [4.4, 0.8], [5, 1], [7.5, 0.9], [8.2, 0.55], [10, 0.55]],
   };
-  const HOLD = 0.08; // last 8 % of the scroll keeps the video parked on its last frame
+  const HOLD = 0.12; // last 12 % of the scroll keeps the video parked on its last frame (sheet holds, then fade)
 
   /* Red screen bounding box, measured from the source frames (% of the 1920x1080 frame).
      [time, x0, x1, y0, y1]. Tune these if you swap the clip. */
@@ -71,6 +72,7 @@
   const poster = stage.querySelector('.stage__poster');
   const frames = [...stage.querySelectorAll('.stage__frames img')];
   const scrim = stage.querySelector('.stage__scrim');
+  const fadeEl = stage.querySelector('.stage__fade');
   const lockup = stage.querySelector('.hero-lockup');
   const titleEl = stage.querySelector('.hero-title');
   const titleInner = stage.querySelector('.hero-title__inner');
@@ -176,8 +178,9 @@
     titleEl.style.filter = te.vout < 0.98 ? `blur(${((1 - te.vout) * 10).toFixed(2)}px)` : 'none';
     lockup.style.visibility = te.vout < 0.01 ? 'hidden' : 'visible';
 
-    // Scrim
+    // Scrim + final fade to black
     scrim.style.opacity = keyAt(BEATS.scrim, vt)[1];
+    fadeEl.style.opacity = smooth((T - BEATS.fadeOut.from) / (BEATS.fadeOut.to - BEATS.fadeOut.from));
 
     // Seat pin
     const pe = env(T, BEATS.pin);
@@ -192,7 +195,7 @@
     const k = smooth((vt - BEATS.countUp.from) / (BEATS.countUp.to - BEATS.countUp.from));
     for (const c of counts) {
       const dec = +c.dataset.dec;
-      c.textContent = fmt(+c.dataset.to * (T >= D ? 1 : k), dec);
+      c.textContent = fmt(+c.dataset.to * k, dec);
     }
 
     // Picture
