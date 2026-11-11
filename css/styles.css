@@ -349,6 +349,8 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
   transition: transform 1.1s var(--ease), filter .7s var(--ease);
 }
 .reel__img--chair { object-position: 72% 50%; }
+.reel__img--c1 { object-position: 62% 56%; }
+.reel__img--c2 { object-position: 60% 52%; }
 .reel__panel::after {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(0deg, rgba(10, 10, 12, .92) 0%, rgba(10, 10, 12, .55) 34%, rgba(10, 10, 12, 0) 62%),
@@ -391,7 +393,7 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .reel__count { font-size: 13px; font-weight: 700; color: var(--gris); font-variant-numeric: tabular-nums; }
 .reel__count span { color: var(--white); }
 .reel__progress { flex: 1; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, .12); overflow: hidden; }
-.reel__progress span { display: block; height: 100%; width: 33.33%; background: var(--white); transition: width .6s var(--ease); }
+.reel__progress span { display: block; height: 100%; width: 25%; background: var(--white); transition: width .6s var(--ease); }
 .reel__nav { display: flex; gap: 8px; }
 .reel__btn {
   display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
@@ -512,7 +514,8 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
   .reel--on .reel__track { flex-direction: column; height: auto; gap: 10px; }
   .reel--on .reel__panel { flex: none; height: 76px; transition: height .7s var(--ease); }
   .reel--on .reel__panel.is-active { flex: none; height: min(500px, 70vh); }
-  .reel__vtitle { writing-mode: horizontal-tb; transform: none; left: 22px; right: 64px; bottom: 0; top: 0; align-items: center; justify-content: flex-start; font-size: 17px; }
+  .reel__vtitle { writing-mode: horizontal-tb; transform: none; left: 22px; right: 64px; bottom: 0; top: 0; align-items: center; justify-content: flex-start; font-size: 17px; overflow: hidden; }
+  .reel__vtitle { display: block; line-height: 76px; text-overflow: ellipsis; }
   .reel__num-sm { top: 0; bottom: 0; left: auto; right: 22px; display: flex; align-items: center; }
   .reel--on .reel__content { width: auto; }
   .reel__content { padding: 0 22px 22px; }
