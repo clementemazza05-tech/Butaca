@@ -28,6 +28,17 @@
   };
   const HOLD = 0.12; // last 12 % of the scroll keeps the video parked on its last frame (sheet holds, then fade)
 
+  /* Reading pauses: at each of these times the camera stops while you keep scrolling,
+     so the copy on screen can be read at a normal scroll speed.
+       at  : timeline second where the camera parks (all copy of that beat already in)
+       len : how long it stays parked, in "scroll seconds" (longer = more scrolling) */
+  const DWELL = [
+    { at: 0.6,  len: 1.0 }, // hero: BUTACA + subtitle
+    { at: 3.45, len: 1.8 }, // problema: the three lines
+    { at: 6.1,  len: 1.8 }, // solución: headline + seat map
+    { at: 9.8,  len: 1.2 }, // la vista: sheet with the numbers counted
+  ];
+
   /* Red screen bounding box, measured from the source frames (% of the 1920x1080 frame).
      [time, x0, x1, y0, y1]. Tune these if you swap the clip. */
   const SCREEN = [
@@ -91,6 +102,17 @@
 
   let D = 9.958;                       // clip duration, refined on loadedmetadata
   const totalT = () => D / (1 - HOLD); // virtual timeline incl. hold
+  const totalS = () => totalT() + DWELL.reduce((a, d) => a + d.len, 0); // scroll timeline incl. reading pauses
+  // scroll seconds -> timeline seconds: flat while inside a pause, 1:1 elsewhere
+  const sToT = (sv) => {
+    let t = sv;
+    for (const d of DWELL) {
+      if (t <= d.at) return t;
+      if (t <= d.at + d.len) return d.at;
+      t -= d.len;
+    }
+    return t;
+  };
   let T = 0;                           // current (smoothed) virtual time
   let mode = params.has('frames') ? 'frames' : 'video';
   let videoReady = false;
@@ -290,12 +312,12 @@
 
     if (hasGSAP) {
       gsap.registerPlugin(ScrollTrigger);
-      const state = { T: 0 };
+      const state = { S: 0 };
       gsap.to(state, {
-        T: () => totalT(),
+        S: () => totalS(),
         ease: 'none',
         scrollTrigger: { trigger: film, start: 'top top', end: 'bottom bottom', scrub: 0.5, invalidateOnRefresh: true },
-        onUpdate: () => { T = state.T; render(); },
+        onUpdate: () => { T = sToT(state.S); render(); },
       });
       gsap.ticker.add(seekLoop);
     } else {
@@ -303,7 +325,7 @@
       let target = 0;
       const read = () => {
         const range = film.offsetHeight - innerHeight;
-        target = clamp((scrollY - film.offsetTop) / range) * totalT();
+        target = sToT(clamp((scrollY - film.offsetTop) / range) * totalS());
       };
       addEventListener('scroll', read, { passive: true });
       read(); T = target;
