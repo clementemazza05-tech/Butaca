@@ -60,6 +60,7 @@
   initSeatMap();
   initForm();
   initReel();
+  initFlow();
 
   if (!root.classList.contains('film-on') || reduceMotion) {
     initSmoothScroll(false);
@@ -466,6 +467,16 @@
     reel.querySelector('[data-reel-prev]').addEventListener('click', () => set(active - 1));
     reel.querySelector('[data-reel-next]').addEventListener('click', () => set(active + 1));
     set(0);
+  }
+
+  /* ---- Integration cards: on touch screens, open each card as it comes into view ---- */
+  function initFlow() {
+    const cards = document.querySelectorAll('.flow__card');
+    if (!cards.length || !('IntersectionObserver' in window) || matchMedia('(hover: hover)').matches) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => e.target.classList.toggle('is-open', e.intersectionRatio >= 0.6));
+    }, { threshold: [0, 0.6, 1] });
+    cards.forEach((c) => io.observe(c));
   }
 
   /* ---- Demo form (front-end only) ---- */

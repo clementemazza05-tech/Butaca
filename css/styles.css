@@ -414,35 +414,79 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 .pilot__lead { flex: 1; min-width: 24px; border-bottom: 2px dotted rgba(141, 153, 174, .45); transform: translateY(-5px); }
 .pilot__val { font-size: 14px; font-weight: 600; color: var(--gris); white-space: nowrap; }
 
-/* Integration: three frames on a strip of film */
-.strip {
-  position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
-  padding: 34px 0; border-radius: 22px; background: #0A0A0D; box-shadow: inset 0 0 0 1px var(--line);
+/* Integration: three step cards. Art on top, a folder-tab panel below that drops on hover to reveal more. */
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.flow__card {
+  --panel: #17171C; --ink: var(--white); --muted: rgba(255, 255, 255, .72); --num: var(--red);
+  --h: 54%; --tab: 26px; --tabw: 58%; --r: 22px;
+  position: relative; overflow: hidden; isolation: isolate; border-radius: 26px;
+  height: clamp(400px, calc(100vh - 360px), 540px); height: clamp(400px, calc(100svh - 360px), 540px);
+  box-shadow: inset 0 0 0 1px var(--line);
 }
-.strip::before, .strip::after {
-  content: ""; position: absolute; left: 14px; right: 14px; height: 10px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='10'%3E%3Crect x='7' width='16' height='10' rx='3' fill='%23fff' fill-opacity='.12'/%3E%3C/svg%3E") repeat-x left center / 30px 10px;
+.flow__card--dark { --panel: #0F0F12; background: radial-gradient(100% 80% at 60% 0%, #3E3E4A, #1E1E25 75%); }
+.flow__card--red { --panel: #A3031E; --num: var(--white); --muted: rgba(255, 255, 255, .84);
+  background: radial-gradient(80% 70% at 50% 10%, #FF5068, #D90429 55%, #8A0219); }
+.flow__card--light { --panel: #ECEEF2; --ink: #0F0F12; --muted: #4A5262;
+  background: radial-gradient(90% 80% at 30% 0%, #FFFFFF, #C9CED7 75%); }
+
+.flow__art { position: absolute; left: 0; right: 0; top: 0; height: calc(100% - var(--h) + 8px); display: grid; place-items: center; transition: height .7s var(--ease); }
+.flow__panel {
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--h); z-index: 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 6px 26px 26px; background: var(--panel); color: var(--ink); border-top-right-radius: var(--r);
+  transition: height .7s var(--ease);
 }
-.strip::before { top: 12px; }
-.strip::after { bottom: 12px; }
-.frame {
-  position: relative; margin: 0 8px; min-height: clamp(230px, 22vw, 300px); padding: 28px 30px;
-  border-radius: 12px; background: linear-gradient(180deg, #1C1C22, #131317);
-  display: flex; flex-direction: column; justify-content: space-between; gap: 40px;
+/* folder tab: raised on the left, a soft concave step down to the right */
+.flow__panel::before {
+  content: ""; position: absolute; left: 0; bottom: 100%; width: var(--tabw); height: var(--tab);
+  background: var(--panel); border-top-right-radius: var(--r);
 }
-.frame:not(:last-child)::after {
-  content: ""; position: absolute; z-index: 1; right: -21px; top: 50%; width: 26px; height: 26px; margin-top: -13px;
-  border-radius: 50%; background: #0A0A0D url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8h10M8.5 3.5 13 8l-4.5 4.5' fill='none' stroke='%238D99AE' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 14px no-repeat; box-shadow: inset 0 0 0 1px var(--line);
+.flow__panel::after {
+  content: ""; position: absolute; left: var(--tabw); bottom: 100%; width: var(--r); height: var(--r);
+  background: radial-gradient(circle at 100% 0, transparent calc(var(--r) - .5px), var(--panel) var(--r));
 }
-.frame__n { font-family: var(--display); font-size: clamp(64px, 6vw, 92px); line-height: .8; color: var(--red); }
-.frame__txt { font-size: clamp(22px, 2.1vw, 30px); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; text-wrap: balance; }
-.frame__txt em { display: block; margin-top: 8px; font-size: 16px; font-style: normal; font-weight: 500; letter-spacing: 0; color: var(--gris); }
-.snippet {
-  margin-top: 24px; display: inline-flex; align-items: center; gap: 14px; max-width: 100%;
-  padding: 12px 14px 12px 18px; border-radius: 999px; background: #0A0A0D; border: 1px solid var(--line);
+.flow__num { position: relative; margin-top: calc(-1 * var(--tab) + 4px); font-family: var(--display); font-size: clamp(52px, 4.4vw, 72px); line-height: .9; color: var(--num); }
+.flow__title { font-size: clamp(19px, 1.6vw, 23px); line-height: 1.18; letter-spacing: -.01em; text-wrap: balance; }
+.flow__text p { margin-top: 8px; font-size: 15px; line-height: 1.45; color: var(--muted); }
+.flow__card:hover, .flow__card.is-open { --h: 44%; }
+
+/* 01 · plan + photo */
+.art-plan { padding: 22px 22px 34px; }
+.art-plan__svg { width: 92%; height: auto; max-height: 100%; transition: transform .8s var(--ease); }
+.pl-room { fill: none; stroke: rgba(255, 255, 255, .18); stroke-width: 1; stroke-dasharray: 3 4; }
+.pl-screen { fill: none; stroke: var(--red-text); stroke-width: 2.5; stroke-linecap: round; }
+.pl-label { fill: #8D99AE; font: 700 7px var(--sans); letter-spacing: 2px; }
+.pl-seat { fill: none; stroke: rgba(255, 255, 255, .34); stroke-width: 1; }
+.pl-sel { fill: var(--red); }
+.pl-dim { fill: none; stroke: rgba(255, 255, 255, .22); stroke-width: 1; }
+.art-plan__photo {
+  position: absolute; right: 9%; bottom: 20%; width: 42%; height: auto; border-radius: 8px;
+  border: 3px solid #F2F2F4; box-shadow: 0 18px 30px -12px rgba(0, 0, 0, .8);
+  transform: rotate(6deg) translateY(36%); transition: transform .8s var(--ease);
 }
-.snippet code { font: 500 14px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: #cfd5df; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-.snippet__dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
-.snippet__lbl { flex: none; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
+.flow__card:hover .art-plan__photo, .flow__card.is-open .art-plan__photo { transform: rotate(-3deg) translateY(4%); }
+.flow__card:hover .art-plan__svg, .flow__card.is-open .art-plan__svg { transform: scale(1.04); }
+
+/* 02 · the chair, in 3D */
+.art-chair__img { position: relative; width: min(64%, 260px); height: auto; filter: drop-shadow(0 22px 22px rgba(60, 0, 10, .55)); transform: translateY(26%) scale(.9); transition: transform .8s var(--ease); }
+.art-chair__floor { position: absolute; left: 50%; bottom: 10%; width: 52%; height: 22px; margin-left: -26%; border-radius: 50%; background: radial-gradient(closest-side, rgba(60, 0, 10, .55), transparent); transition: transform .8s var(--ease), opacity .8s; }
+.flow__card:hover .art-chair__img, .flow__card.is-open .art-chair__img { transform: translateY(0) scale(1.06) rotate(-4deg); }
+.flow__card:hover .art-chair__floor, .flow__card.is-open .art-chair__floor { transform: scale(.8); opacity: .7; }
+
+/* 03 · the snippet */
+.art-code { padding: 24px; }
+.art-code__win {
+  width: 100%; border-radius: 14px; background: #0B0B0E; box-shadow: 0 24px 40px -18px rgba(15, 15, 18, .6);
+  transform: translateY(24%); transition: transform .8s var(--ease);
+}
+.art-code__bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.art-code__bar i { width: 8px; height: 8px; border-radius: 50%; background: #3A3A44; }
+.art-code__bar i:first-child { background: var(--red); }
+.art-code__bar span { margin-left: 8px; font: 600 11px var(--sans); color: #8D99AE; }
+.art-code code { display: block; padding: 14px 16px 16px; font: 500 12.5px/1.65 ui-monospace, "SF Mono", Menlo, monospace; color: #CFD5DF; white-space: pre; overflow: hidden; }
+.c-com { color: #7C8698; }
+.flow__card:hover .art-code__win, .flow__card.is-open .art-code__win { transform: translateY(0) rotate(-1.5deg); }
+
 .c-tag { color: #ff6b81; } .c-attr { color: #b9c2d0; } .c-str { color: #ffffff; }
 
 /* CTA: a red block that echoes the hero screen; its light spills into the room like the lobby floor */
@@ -496,20 +540,13 @@ html.film-on .debug:not([hidden]) { display: block; position: absolute; inset: 0
 
 @media (max-width: 980px) {
   .contact { grid-template-columns: 1fr; }
-  .strip { grid-template-columns: 1fr; padding: 0 34px; gap: 16px; }
-  .strip::before, .strip::after { top: 14px; bottom: 14px; left: auto; right: auto; width: 10px; height: auto; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='30'%3E%3Crect y='7' width='10' height='16' rx='3' fill='%23fff' fill-opacity='.12'/%3E%3C/svg%3E") repeat-y center top / 10px 30px; }
-  .strip::before { left: 12px; }
-  .strip::after { right: 12px; }
-  .strip { padding-block: 14px; }
-  .frame { margin: 0; min-height: 0; gap: 24px; }
-  .frame:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -21px; margin: 0 0 0 -13px; transform: rotate(90deg); }
+  .flow { grid-template-columns: 1fr; }
+  .flow__card { height: 420px; }
+  .art-code code { font-size: 11.5px; white-space: pre-wrap; word-break: break-all; }
   .pilot__list li { flex-wrap: wrap; gap: 4px 16px; }
   .pilot__lead { display: none; }
   .pilot__lbl { flex: 1 1 100%; }
   .cta { grid-template-columns: 1fr; border-radius: 30px; }
-  .snippet { border-radius: 20px; align-items: flex-start; }
-  .snippet code { white-space: normal; word-break: break-all; }
-  .snippet__dot { margin-top: 6px; }
   .footer__copy { margin-left: 0; width: 100%; }
 }
 
