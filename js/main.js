@@ -344,7 +344,7 @@
       if (!el) return;
       e.preventDefault();
       // Land section headings just under the fixed nav instead of at the section's padded top
-      const heading = id === '#top' ? null : el.querySelector('.section__title');
+      const heading = id === '#top' ? null : el.querySelector('.section__title, .talk__title');
       const target = heading || el;
       const offset = heading ? -(document.querySelector('.nav').offsetHeight + 16) : 0;
       if (lenis) lenis.scrollTo(id === '#top' ? 0 : target, { duration: 1.6, offset });
@@ -479,35 +479,53 @@
     cards.forEach((c) => io.observe(c));
   }
 
-  /* ---- Demo form (front-end only) ---- */
+  /* ---- Hablemos: one-line demo request (front-end only) ---- */
   function initForm() {
-    const form = document.querySelector('.form');
+    const form = document.querySelector('[data-talk]');
     if (!form) return;
-    const ok = form.querySelector('.form__ok');
+    const talk = form.closest('.talk');
+    const msg = talk.querySelector('[data-talk-msg]');
+    const done = talk.querySelector('[data-talk-done]');
+    const fields = [...form.querySelectorAll('input, select')];
     const rules = {
       cine: (v) => (v.trim().length >= 2 ? '' : 'Contanos el nombre de tu cine.'),
       email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Revisá el email, parece incompleto.'),
-      salas: (v) => { const n = Number(v); return Number.isInteger(n) && n >= 1 && n <= 99 ? '' : 'Poné un número de salas entre 1 y 99.'; },
+      salas: (v) => (v ? '' : 'Elegí cuántas salas tiene tu cine.'),
     };
-    const check = (input) => {
-      const msg = rules[input.name](input.value);
-      const err = document.getElementById(input.getAttribute('aria-describedby'));
-      input.setAttribute('aria-invalid', msg ? 'true' : 'false');
-      err.textContent = msg;
-      return !msg;
-    };
-    form.querySelectorAll('input').forEach((i) => i.addEventListener('blur', () => { if (i.value) check(i); }));
+    const errorOf = (f) => rules[f.name](f.value);
+    fields.forEach((f) => {
+      f.setAttribute('aria-describedby', 'talk-msg');
+      f.addEventListener(f.tagName === 'SELECT' ? 'change' : 'input', () => {
+        if (f.getAttribute('aria-invalid') === 'true' && !errorOf(f)) {
+          f.setAttribute('aria-invalid', 'false');
+          const next = fields.find((x) => x.getAttribute('aria-invalid') === 'true');
+          msg.textContent = next ? errorOf(next) : '';
+        }
+      });
+    });
+    msg.id = 'talk-msg';
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const inputs = [...form.querySelectorAll('input')];
-      const results = inputs.map(check);
-      const firstBad = inputs[results.indexOf(false)];
-      if (firstBad) { firstBad.focus(); return; }
-      const cine = form.cine.value.trim();
-      form.classList.add('is-sent');
-      ok.textContent = `¡Listo! Recibimos el pedido de ${cine}. Te escribimos para coordinar la demo.`;
-      ok.setAttribute('tabindex', '-1');
-      ok.focus();
+      let first = null;
+      fields.forEach((f) => {
+        const bad = !!errorOf(f);
+        f.setAttribute('aria-invalid', String(bad));
+        if (bad && !first) first = f;
+      });
+      if (first) { msg.textContent = errorOf(first); first.focus(); return; }
+      msg.textContent = '';
+      const v = Object.fromEntries(fields.map((f) => [f.name, f.value.trim()]));
+      talk.querySelector('[data-talk-done-title]').textContent = `¡Listo, ${v.cine}!`;
+      talk.querySelector('[data-talk-done-txt]').textContent = `Te escribimos a ${v.email} para coordinar una demo (${v.salas}).`;
+      talk.classList.add('is-sent');
+      done.hidden = false;
+      done.focus();
+    });
+    talk.querySelector('[data-talk-again]').addEventListener('click', () => {
+      talk.classList.remove('is-sent');
+      done.hidden = true;
+      fields[0].focus();
     });
   }
 })();
