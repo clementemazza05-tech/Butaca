@@ -95,13 +95,6 @@ body::after {
   transition: transform .15s var(--ease), background-color .2s, border-color .2s, color .2s, box-shadow .2s;
 }
 .pill:active, .btn:active { transform: scale(.97); }
-.pill--brand {
-  padding: 0 16px 0 8px; gap: 8px;
-  background: rgba(15, 15, 18, .55); border-color: var(--line);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .06em;
-}
-.pill--brand img { width: 28px; height: 28px; }
 .pill--ghost {
   background: rgba(15, 15, 18, .55); border-color: var(--line); color: var(--white);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
@@ -126,7 +119,14 @@ body::after {
 .nav > *, .nav__links > * { pointer-events: auto; }
 .nav__links { display: flex; gap: 8px; }
 .nav .pill { min-height: 40px; font-size: 13px; }
-.nav .pill--brand { min-height: 44px; }
+/* Brand mark: just the chair, no pill */
+.nav__logo {
+  display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin-left: -6px;
+  border-radius: 14px; transition: transform .2s var(--ease);
+}
+.nav__logo img { width: 52px; height: 52px; filter: drop-shadow(0 3px 6px rgba(0, 0, 0, .45)); }
+.nav__logo:hover { transform: translateY(-1px) rotate(-3deg); }
+.nav__logo:active { transform: scale(.94); }
 @media (max-width: 640px) { .nav__opt { display: none; } }
 
 /* =========================================================
